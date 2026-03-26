@@ -20,6 +20,20 @@ def disponibilidade_analitica(n, k, p):
     )
 
 
+# =========================
+# CÁLCULO DE N MÍNIMO
+# =========================
+def calcular_n_minimo(k, p, A_alvo, max_n=10000):
+    """Retorna o menor n >= k tal que a disponibilidade analítica >= A_alvo.
+    Retorna None se não for encontrado dentro de max_n."""
+    if p <= 0:
+        return None
+    for n in range(k, max_n + 1):
+        if disponibilidade_analitica(n, k, p) >= A_alvo:
+            return n
+    return None
+
+
 
 
 # =========================
@@ -182,3 +196,46 @@ st.markdown(f"""
 - **k = {n}** → Baixa disponibilidade (todos precisam estar ativos)
 - **k = {n//2}** → Equilíbrio entre disponibilidade e consistência
 """)
+
+
+
+
+# =========================
+# SEÇÃO EXTRA: CÁLCULO DE N
+# =========================
+st.divider()
+st.header("🔢 Calculadora de N mínimo")
+st.markdown("""
+Dado um nível de disponibilidade desejado, um quórum **k** e a probabilidade individual **p**,
+esta seção calcula o **número mínimo de servidores (n)** necessário para atingir essa disponibilidade.
+""")
+
+col_n1, col_n2, col_n3 = st.columns(3)
+p_n = col_n1.number_input("Probabilidade de servidor ativo (p)", min_value=0.001, max_value=1.0, value=0.9, step=0.001, format="%.3f", key="p_n")
+k_n = col_n2.number_input("Quórum mínimo (k)", min_value=1, value=1, step=1, key="k_n")
+A_alvo = col_n3.number_input("Disponibilidade alvo", min_value=0.0, max_value=0.999999999, value=0.99, step=0.001, format="%.9f", key="A_alvo")
+
+n_calculado = calcular_n_minimo(int(k_n), p_n, A_alvo)
+
+if n_calculado is None:
+    st.error("Não foi possível encontrar um N viável (até 10.000 servidores). Tente reduzir a disponibilidade alvo ou aumentar p.")
+else:
+    disp_real = disponibilidade_analitica(n_calculado, int(k_n), p_n)
+    st.success(f"Para p = {p_n}, k = {int(k_n)} e disponibilidade ≥ {A_alvo:.9g}:  **N mínimo = {n_calculado}** (disponibilidade real: {disp_real:.9f})")
+
+st.subheader("Tabela padrão: p = 0.5, k = 1")
+st.markdown("Número mínimo de servidores necessário para atingir cada nível de disponibilidade com p = 0.5 e k = 1.")
+
+alvos_padrao = [0.9, 0.99, 0.999, 0.9999, 0.99999, 0.999999]
+linhas = []
+for alvo in alvos_padrao:
+    n_min = calcular_n_minimo(1, 0.5, alvo)
+    disp = disponibilidade_analitica(n_min, 1, 0.5) if n_min else None
+    linhas.append({
+        "Disponibilidade alvo": f"{alvo}",
+        "N mínimo": n_min if n_min else "—",
+        "Disponibilidade real": f"{disp:.9f}" if disp else "—",
+    })
+
+df_n = pd.DataFrame(linhas)
+st.dataframe(df_n, use_container_width=True, hide_index=True)
