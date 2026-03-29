@@ -60,7 +60,7 @@ Cada servidor é um experimento de Bernoulli
 
 Um servidor pode estar disponível (p) ou indisponível (1-p).
 
-Se temos **n servidores**, o número de servidores ativos segue uma distribuição binomial (por que distribuição binomial???).
+Se temos **n servidores**, o número de servidores ativos segue uma distribuição binomial.
 
 A distribuição binomial calcula:
 
@@ -115,9 +115,6 @@ P(X \geq k) = \sum_{i=k}^{n} \binom{n}{i}p^i(1-p)^{n-i}
 ```
 
 Essa é a fórmula de 1.1.
-
-
-Testar os casos limites e entender os casos gerados.
 
 Interpretações:
 
