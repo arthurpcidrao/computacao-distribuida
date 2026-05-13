@@ -13,3 +13,8 @@ dependencies = [
     "sns>=0.1",
     "streamlit>=1.55.0",
 ]
+
+[tool.uv.workspace]
+members = [
+    "Trabalho 4",
+]

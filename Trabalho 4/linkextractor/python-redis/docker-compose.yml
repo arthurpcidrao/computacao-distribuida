@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  api-python-redis:
+    container_name: api-python-redis
+    image: linkextractor-api:step5-python
+    build: ./api
+    ports:
+      - "5000:5000"
+    environment:
+      - REDIS_URL=redis://redis-python-redis:6379
+  web-python-redis:
+    container_name: web-python-redis
+    image: linkextractor-web:step5-php
+    build: ./www
+    ports:
+      - "80:80"
+    environment:
+      - API_ENDPOINT=http://api-python-redis:5000/api/
+  redis-python-redis:
+    container_name: redis-python-redis
+    image: redis

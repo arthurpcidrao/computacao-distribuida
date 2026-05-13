@@ -2,6 +2,12 @@ version = 1
 revision = 3
 requires-python = ">=3.12"
 
+[manifest]
+members = [
+    "computacao-distribuida",
+    "trabalho-4",
+]
+
 [[package]]
 name = "altair"
 version = "6.0.0"
@@ -1640,6 +1646,17 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/2c/23/f6c6112a04d28eed765e374435fb1a9198f73e1ec4b4024184f21faeb1ad/tornado-6.5.5-cp39-abi3-win_amd64.whl", hash = "sha256:6443a794ba961a9f619b1ae926a2e900ac20c34483eea67be4ed8f1e58d3ef7b", size = 448990, upload-time = "2026-03-10T21:30:58.857Z" },
     { url = "https://files.pythonhosted.org/packages/b7/c8/876602cbc96469911f0939f703453c1157b0c826ecb05bdd32e023397d4e/tornado-6.5.5-cp39-abi3-win_arm64.whl", hash = "sha256:2c9a876e094109333f888539ddb2de4361743e5d21eece20688e3e351e4990a6", size = 448016, upload-time = "2026-03-10T21:31:00.43Z" },
 ]
+
+[[package]]
+name = "trabalho-4"
+version = "0.1.0"
+source = { virtual = "Trabalho 4" }
+dependencies = [
+    { name = "locust" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "locust", specifier = ">=2.43.4" }]
 
 [[package]]
 name = "typing-extensions"

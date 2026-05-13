@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  api-python-without-redis:
+    image: linkextractor-api:step5-python
+    build: ./api
+    ports:
+      - "5001:5000"
+  web-python-without-redis:
+    image: linkextractor-web:step5-php
+    build: ./www
+    ports:
+      - "81:80"
+    environment:
+      - API_ENDPOINT=http://api-python-without-redis:5000/api/
