@@ -1,6 +1,6 @@
 # Relatório de Testes de Carga - Computação Distribuída
 
-Este documento apresenta os resultados dos testes de carga realizados em uma aplicação WordPress utilizando Locust para geração de tráfego e Nginx como balanceador de carga. O objetivo foi avaliar o comportamento da aplicação sob diferentes níveis de concorrência e escalabilidade horizontal.
+Este documento apresenta os resultados dos testes de carga realizados em uma aplicação WordPress utilizando o Locust para geração de tráfego e o Nginx como balanceador de carga. O objetivo foi avaliar o comportamento da aplicação sob diferentes níveis de concorrência e escalabilidade horizontal.
 
 ---
 
@@ -48,20 +48,6 @@ Este documento apresenta os resultados dos testes de carga realizados em uma apl
 
 ---
 
-# Comparativo Geral entre Rotas e Cenário Híbrido
-
-O comparativo geral tem como objetivo analisar o impacto do tamanho da resposta e da concorrência simultânea em diferentes endpoints da aplicação.
-
-## Comparativo Geral - Mediana de Resposta
-
-![Comparativo Mediana](./images/comparativo_geral/comparativo_median_ms.png)
-
-## Comparativo Geral - P95
-
-![Comparativo P95](./images/comparativo_geral/comparativo_p95_ms.png)
-
----
-
 # Análise Geral dos Resultados
 
 Os resultados mostram um comportamento diretamente relacionado ao tamanho do payload transferido:
@@ -97,32 +83,37 @@ Avaliar o desempenho da aplicação entregando um payload médio de aproximadame
 
 ---
 
-## Gráficos
+# Análise - Endpoint `/?p=13`
 
-### RPS vs Instâncias
+![P95 p13](./images/root_p_13/p95_ms_consolidado.png)
+![percentual erros p13](./images/root_p_13/failure_rate_consolidado.png)
 
-![RPS p13](./images/root_p_13/rps_vs_instancias.png)
+## Observações
 
-### Mediana vs Usuários
+- Em 400 e 500 usuários, o sistema apresentou relativa estabilidade.
+- O aumento para 600 usuários provocou crescimento expressivo da latência.
+- O cenário com 2 e 3 instâncias apresentou P95 maior do que 1 instância.
 
-![Median p13](./images/root_p_13/median_ms_vs_usuarios.png)
+## Explicação
 
-### P95 vs Usuários
+Embora pareça contraintuitivo, adicionar mais instâncias Docker na mesma máquina não necessariamente melhora o desempenho.
 
-![P95 p13](./images/root_p_13/p95_ms_vs_usuarios.png)
+Cada nova instância WordPress passou a competir pelos mesmos recursos físicos:
 
-### Taxa de Falhas
+- CPU compartilhada
+- memória RAM
+- acesso ao disco
+- ciclos do scheduler do Linux
 
-![Falhas p13](./images/root_p_13/failure_rate_vs_usuarios.png)
+Além disso, o Locust também consumia recursos localmente para simular centenas de usuários simultâneos.
 
----
+Isso fez com que:
 
-## Análise
+- o ganho de paralelismo fosse limitado
+- aumentasse a troca de contexto entre processos
+- houvesse maior contenção de recursos
 
-- Até 500 usuários simultâneos o sistema manteve estabilidade.
-- Em 600 usuários começaram a surgir falhas em ambientes com múltiplas instâncias.
-- O ganho de RPS foi limitado devido à contenção de CPU e I/O.
-- O P95 aumentou significativamente em cenários de maior concorrência.
+Como resultado, o P95 cresceu significativamente em cenários com maior concorrência.
 
 ---
 
@@ -150,34 +141,38 @@ Avaliar o impacto do maior volume de transferência de dados (~575 KB).
 
 ---
 
-## Gráficos
+# Análise - Endpoint `/?p=21`
 
-### RPS vs Instâncias
+![P95 p21](./images/root_p_21/p95_ms_consolidado.png)
+![percentual erros p13](./images/root_p_21/failure_rate_consolidado.png)
 
-![RPS p21](./images/root_p_21/rps_vs_instancias.png)
+## Observações
 
-### Mediana vs Usuários
+- Este foi o endpoint com pior desempenho geral.
+- O P95 ultrapassou 3000 ms em cenários de alta carga.
+- O payload maior (~575 KB) aumentou o tempo de processamento e transferência.
+- Em 600 usuários houve clara saturação da máquina.
 
-![Median p21](./images/root_p_21/median_ms_vs_usuarios.png)
+## Explicação
 
-### P95 vs Usuários
+O endpoint `/?p=21` possui o maior volume de dados transferidos entre todos os cenários.
 
-![P95 p21](./images/root_p_21/p95_ms_vs_usuarios.png)
+Isso provocou:
 
-### Taxa de Falhas
+- maior consumo de memória
+- maior uso de CPU
+- aumento de operações de serialização e transferência
+- maior pressão sobre o Docker networking
 
-![Falhas p21](./images/root_p_21/failure_rate_vs_usuarios.png)
+Quando combinado com:
 
----
+- múltiplas instâncias WordPress
+- Locust executando na mesma máquina
+- MySQL compartilhando recursos locais
 
-## Análise
+o sistema entrou em forte contenção de recursos.
 
-- Este cenário apresentou os maiores tempos de resposta.
-- A combinação de payload elevado com alta concorrência provocou saturação rápida.
-- Em 600 usuários surgiram falhas relevantes:
-  - 100 falhas em 2 instâncias
-  - 199 falhas em 3 instâncias
-- O aumento de instâncias não conseguiu compensar o gargalo físico da máquina.
+O crescimento extremo do P95 demonstra que parte das requisições ficou represada aguardando recursos computacionais disponíveis.
 
 ---
 
@@ -205,23 +200,56 @@ Avaliar o desempenho da aplicação com payload menor (~223 KB).
 
 ---
 
-## Gráficos
+# Análise - Endpoint `/?p=28`
 
-### RPS vs Instâncias
+![P95 p28](./images/root_p_28/p95_ms_consolidado.png)
+![percentual erros p13](./images/root_p_28/failure_rate_consolidado.png)
 
-![RPS p28](./images/root_p_28/rps_vs_instancias.png)
+## Observações
 
-### Mediana vs Usuários
+- Este foi o cenário mais estável.
+- Em 400 e 500 usuários os tempos permaneceram relativamente baixos.
+- Mesmo em 600 usuários, os valores ficaram inferiores aos demais endpoints.
+- O cenário híbrido apresentou aumento significativo em 600 usuários.
 
-![Median p28](./images/root_p_28/median_ms_vs_usuarios.png)
+## Explicação
 
-### P95 vs Usuários
+O endpoint `/?p=28` possui o menor payload (~223 KB), reduzindo significativamente:
 
-![P95 p28](./images/root_p_28/p95_ms_vs_usuarios.png)
+- tempo de transferência
+- uso de CPU
+- pressão de memória
+- operações de I/O
 
-### Taxa de Falhas
+Por isso, o sistema conseguiu manter estabilidade mesmo sob alta concorrência.
 
-![Falhas p28](./images/root_p_28/failure_rate_vs_usuarios.png)
+Entretanto, no cenário híbrido, múltiplas rotas passaram a competir simultaneamente por recursos da máquina, incluindo endpoints maiores (`/?p=13` e `/?p=21`).
+
+Isso explica o salto observado no P95 híbrido em 600 usuários.
+
+---
+
+# Impacto do Locust Executando Localmente
+
+Um ponto importante é que os usuários simulados pelo Locust também estavam sendo processados na mesma máquina.
+
+Ou seja:
+
+- o Locust consumia CPU para criar conexões simultâneas
+- o Docker consumia recursos para manter containers ativos
+- o WordPress processava requisições PHP
+- o MySQL executava consultas
+- o Nginx realizava balanceamento
+- o sistema operacional gerenciava todos os processos
+
+Em um ambiente distribuído real, normalmente:
+
+- o gerador de carga fica em outra máquina
+- os containers ficam distribuídos em múltiplos hosts
+- banco de dados possui recursos dedicados
+
+Como tudo estava centralizado localmente, os resultados refletem tanto a capacidade do WordPress quanto os limites físicos do notebook utilizado.
+
 
 ---
 
@@ -234,66 +262,7 @@ Avaliar o desempenho da aplicação com payload menor (~223 KB).
 
 ---
 
-# 4. Cenário Híbrido
-
-## Objetivo
-
-Simular acessos simultâneos em múltiplas rotas para aproximar um cenário real de utilização.
-
----
-
-## Resultados
-
-| Instâncias | Usuários | Requests | Falhas | Mediana (ms) | P95 (ms) | P99 (ms) | Média (ms) | RPS |
-|---|---|---|---|---|---|---|---|---|
-| 1 | 400 | 7858 | 0 | 76.6 | 126.6 | 323.3 | 85.00 | 65.7 |
-| 1 | 500 | 9665 | 0 | 99 | 213.3 | 340 | 110.35 | 82.4 |
-| 1 | 600 | 10804 | 0 | 443.3 | 1366.6 | 1900 | 534.32 | 89.4 |
-| 2 | 400 | 7858 | 0 | 79.3 | 140 | 310 | 87.83 | 67.6 |
-| 2 | 500 | 9688 | 0 | 100 | 223.3 | 340 | 112.02 | 81.6 |
-| 2 | 600 | 10330 | 20 | 796.6 | 1633.3 | 2366.6 | 789.77 | 83.6 |
-| 3 | 400 | 7883 | 0 | 79.3 | 160 | 323.3 | 89.52 | 66.6 |
-| 3 | 500 | 9670 | 0 | 100.6 | 256.6 | 356.6 | 115.75 | 82.3 |
-| 3 | 600 | 10213 | 51 | 870 | 1900 | 2366 | 889.24 | 83.1 |
-
----
-
-## Gráficos
-
-### RPS vs Instâncias
-
-![RPS Híbrido](./images/Hibrido_Geral/rps_vs_instancias.png)
-
-### Mediana vs Usuários
-
-![Median Híbrido](./images/Hibrido_Geral/median_ms_vs_usuarios.png)
-
-### P95 vs Usuários
-
-![P95 Híbrido](./images/Hibrido_Geral/p95_ms_vs_usuarios.png)
-
-### Taxa de Falhas
-
-![Falhas Híbrido](./images/Hibrido_Geral/failure_rate_vs_usuarios.png)
-
----
-
-## Análise
-
-- O cenário híbrido apresentou comportamento semelhante ao endpoint mais pesado (`/?p=21`).
-- O aumento simultâneo de diferentes tipos de requisição elevou significativamente a latência.
-- Em 600 usuários começaram a surgir falhas mesmo com múltiplas instâncias.
-- A mistura de payloads provocou maior pressão sobre:
-  - CPU
-  - gerenciamento de memória
-  - I/O de disco
-  - cache interno do WordPress
-
----
-
 # Conclusões
-
-Após a análise dos resultados, destacam-se os seguintes pontos:
 
 ## 1. Escalabilidade Horizontal Limitada
 
@@ -352,3 +321,4 @@ Os testes demonstraram que:
 - O tamanho do payload possui impacto direto na latência.
 - Escalabilidade horizontal exige também escalabilidade física.
 - O balanceamento de carga ajuda na distribuição, mas não elimina gargalos de infraestrutura.
+

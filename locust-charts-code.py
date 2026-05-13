@@ -134,6 +134,7 @@ try:
         'median_ms', 'p95_ms', 'p99_ms', 'avg_ms', 'min_ms', 'max_ms',
         'avg_size', 'rps'
     ]
+    # Cálculo da Taxa de Falha em porcentagem
     df['failure_rate'] = (df['fails'] / df['requests']) * 100
     
 except FileNotFoundError:
@@ -142,108 +143,125 @@ except FileNotFoundError:
 
 sns.set_theme(style="whitegrid")
 
-def gerar_comparativo_rotas(df_main):
-    path = os.path.join(base_output_dir, "comparativo_geral")
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-    def rotular_rota(row):
-        if row['modelo'] == 'Híbrido':
-            return 'Híbrido'
-        return row['endpoint'].replace('/?p=', 'Rota ')
-
-    df_comp = df_main.copy()
-    df_comp['identificador_rota'] = df_comp.apply(rotular_rota, axis=1)
-
-    metrics = {
-        'median_ms': 'Tempo de Resposta (Mediana ms)',
-        'p95_ms': 'Tempo de Resposta (P95 ms)'
-    }
-
-    for metric, label in metrics.items():
-        plt.figure(figsize=(12, 7))
-        ordem_x = ['Rota 21', 'Rota 28', 'Rota 13', 'Híbrido']
-        
-        # Adicionado errorbar=None para remover os traços cinzas
-        ax = sns.barplot(
-            data=df_comp,
-            x='identificador_rota',
-            y=metric,
-            hue='usuarios',
-            order=ordem_x,
-            palette='deep',
-            errorbar=None
-        )
-
-        plt.title(f'Comparativo de Desempenho: Rotas vs Híbrido\n{label}', fontsize=14, fontweight='bold')
-        plt.xlabel('Cenário / Rota', fontsize=12)
-        plt.ylabel(label, fontsize=12)
-        plt.legend(title='Usuários Simultâneos', loc='upper right')
-
-        for p in ax.patches:
-            if isinstance(p, Rectangle):
-                height = p.get_height()
-                if height > 0:
-                    ax.annotate(format(height, '.0f'), 
-                                (p.get_x() + p.get_width() / 2., height), 
-                                ha='center', va='center', 
-                                xytext=(0, 9), textcoords='offset points', 
-                                fontsize=9, fontweight='bold')
-
-        plt.tight_layout()
-        plt.savefig(os.path.join(path, f'comparativo_{metric}.png'))
-        plt.close()
-
 def gerar_graficos_por_endpoint(df_subset, endpoint_name):
+    """
+    Gera gráficos comparativos por métrica.
+    Eixo X: Usuários (400, 500, 600) | Barra: Configuração (Instâncias/Híbrido) | Eixo Y: P95 ou Erro
+    """
     folder_name = endpoint_name.replace('/', 'root').replace('?', '_').replace('=', '_')
     path = os.path.join(base_output_dir, folder_name)
     
     if not os.path.exists(path):
         os.makedirs(path)
-    
-    # RPS vs INSTÂNCIAS - Adicionado errorbar=None
-    plt.figure(figsize=(10, 6))
-    sns.barplot(data=df_subset, x='instancias', y='rps', hue='usuarios', palette='viridis', errorbar=None)
-    plt.title(f'Endpoint: {endpoint_name}\nRPS vs Instâncias', fontsize=12, fontweight='bold')
-    plt.tight_layout()
-    plt.savefig(os.path.join(path, 'rps_vs_instancias.png'))
-    plt.close()
 
-    # MÉTRICAS vs USUÁRIOS
-    metrics = {'median_ms': 'Mediana (ms)', 'p95_ms': 'P95 (ms)', 'failure_rate': 'Falha (%)'}
+    metrics = {
+        'p95_ms': 'Tempo de Resposta P95 (ms)',
+        'failure_rate': 'Taxa de Erro (%)'
+    }
+
+    # Criar rótulo para as barras (1 Inst, 2 Inst, 3 Inst, Híbrido)
+    df_plot = df_subset.copy()
+    df_plot['config_instancia'] = df_plot.apply(
+        lambda x: f"{int(x['instancias'])} Inst" if x['modelo'] != 'Híbrido' else "Híbrido", axis=1
+    )
+    
+    # Ordem lógica para as legendas
+    ordem_barras = ['1 Inst', '2 Inst', '3 Inst', 'Híbrido']
+
     for metric, label in metrics.items():
-        plt.figure(figsize=(10, 6))
-        df_plot = df_subset.copy()
-        df_plot['config'] = df_plot.apply(
-            lambda x: f"{int(x['instancias'])} Inst" if x['modelo'] != 'Híbrido' else "Híbrido", axis=1
+        plt.figure(figsize=(12, 7))
+        
+        # O gráfico agora coloca os usuários no eixo X e as instâncias como 'hue'
+        ax = sns.barplot(
+            data=df_plot,
+            x='usuarios',
+            y=metric,
+            hue='config_instancia',
+            hue_order=[b for b in ordem_barras if b in df_plot['config_instancia'].values],
+            palette='viridis',
+            errorbar=None  # Remove traços cinzas (barras de erro)
         )
         
-        # Adicionado errorbar=None
-        ax = sns.barplot(data=df_plot, x='usuarios', y=metric, hue='config', palette='Set2', errorbar=None)
-        plt.title(f'Endpoint: {endpoint_name}\n{label}', fontsize=12, fontweight='bold')
+        plt.title(f'Endpoint: {endpoint_name}\n{label} por Carga de Usuários', fontsize=14, fontweight='bold')
+        plt.xlabel('Usuários Simultâneos', fontsize=12)
+        plt.ylabel(label, fontsize=12)
+        plt.legend(title='Configuração', bbox_to_anchor=(1.05, 1), loc='upper left')
         
+        # Adicionar labels com os valores no topo das barras
         for p in ax.patches:
             if isinstance(p, Rectangle):
                 height = p.get_height()
                 if height >= 0:
+                    # Formatação: 2 casas decimais para erro, inteiro para P95
                     fmt = '.2f' if metric == 'failure_rate' else '.0f'
                     ax.annotate(format(height, fmt), 
                                 (p.get_x() + p.get_width() / 2., height), 
                                 ha='center', va='center', 
-                                xytext=(0, 7), textcoords='offset points', fontsize=8)
+                                xytext=(0, 7), textcoords='offset points', 
+                                fontsize=9, fontweight='bold')
 
         plt.tight_layout()
-        plt.savefig(os.path.join(path, f'{metric}_vs_usuarios.png'))
+        plt.savefig(os.path.join(path, f'{metric}_consolidado.png'))
         plt.close()
 
-if __name__ == "__main__":
-    print("Gerando comparativo geral entre rotas e híbrido...")
-    gerar_comparativo_rotas(df)
+def gerar_comparativo_geral_p95(df_main):
+    """
+    Gera um comparativo geral de P95 para todas as rotas e cenário Híbrido.
+    """
+    path = os.path.join(base_output_dir, "comparativo_geral")
+    if not os.path.exists(path):
+        os.makedirs(path)
 
+    df_comp = df_main.copy()
+    df_comp['rota'] = df_comp.apply(
+        lambda x: 'Híbrido' if x['modelo'] == 'Híbrido' else x['endpoint'].replace('/?p=', 'Rota '), axis=1
+    )
+
+    plt.figure(figsize=(14, 8))
+    ordem_x = ['Rota 21', 'Rota 28', 'Rota 13', 'Híbrido']
+    
+    ax = sns.barplot(
+        data=df_comp,
+        x='rota',
+        y='p95_ms',
+        hue='usuarios',
+        order=ordem_x,
+        palette='magma',
+        errorbar=None
+    )
+
+    plt.title('Comparativo Geral: P95 por Rota e Carga de Usuários', fontsize=16, fontweight='bold')
+    plt.ylabel('P95 (ms)', fontsize=12)
+    plt.xlabel('Rota / Cenário', fontsize=12)
+    
+    for p in ax.patches:
+        if isinstance(p, Rectangle):
+            height = p.get_height()
+            if height > 0:
+                ax.annotate(format(height, '.0f'), 
+                            (p.get_x() + p.get_width() / 2., height), 
+                            ha='center', va='center', 
+                            xytext=(0, 7), textcoords='offset points', fontsize=9)
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(path, 'comparativo_p95_geral.png'))
+    plt.close()
+
+# 2. Execução Principal
+if __name__ == "__main__":
+    print("Iniciando processamento dos gráficos consolidados...")
+    
+    # 1. Comparativo geral de alto nível
+    gerar_comparativo_geral_p95(df)
+    print("✓ Comparativo geral gerado.")
+
+    # 2. Gráficos detalhados por endpoint (Usuários no eixo X)
     unique_endpoints = [ep for ep in df['endpoint'].unique() if ep != 'Aggregated']
+    
     for ep in unique_endpoints:
+        # Incluímos os dados do Híbrido para comparação dentro de cada pasta de rota
         df_endpoint = df[(df['endpoint'] == ep) | (df['modelo'] == 'Híbrido')]
         gerar_graficos_por_endpoint(df_endpoint, ep)
-        print(f"✓ Endpoint '{ep}' processado.")
+        print(f"✓ Gráficos consolidados para '{ep}' processados.")
 
-    print(f"\nSucesso! Verifique a pasta: {base_output_dir}")
+    print(f"\nSucesso! Os gráficos consolidados estão em: {base_output_dir}")
