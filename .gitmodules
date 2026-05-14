@@ -1,0 +1,3 @@
+[submodule "Trabalho 4/services/linkextractor"]
+	path = Trabalho 4/services/linkextractor
+	url = https://github.com/ibnesayeed/linkextractor

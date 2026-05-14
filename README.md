@@ -11,4 +11,5 @@ Atividades para ampliar e conhecer as funcionalidades da computação distribuí
 
 - 📄 [Trabalho 1 - Embasamento Teórico](trabalho_1.md)
 - 🐳 [Trabalho 2 - Docker Compose](trabalho_2.md)
-- 🐳 [Trabalho locust - Testes de Carga](locust-testes.md)
+- 🐳 [Trabalho 3 - Testes de Carga](locust-testes.md)
+- 🐳 [Trabalho 4 - Link Extractor e Testes de Desempenho](trabalho_4.md)

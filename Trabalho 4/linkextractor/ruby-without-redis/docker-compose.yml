@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  api-ruby-without-redis:
+    image: linkextractor-api:step6-ruby
+    build: ./api
+    ports:
+      - "4568:4567"
+    volumes:
+      - ./logs:/app/logs
+  web-ruby-without-redis:
+    image: linkextractor-web:step6-php
+    build: ./www
+    ports:
+      - "83:80"
+    environment:
+      - API_ENDPOINT=http://api-ruby-without-redis:4567/api/
