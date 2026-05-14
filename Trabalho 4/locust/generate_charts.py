@@ -26,7 +26,7 @@ def _annotate_bars(ax, bars, fmt="{:.0f}", fontsize=9, color='black'):
                     bbox=dict(facecolor=color, edgecolor='none', alpha=0.85))
 
 # Quantidade de usuários
-users = ["5", "30", "80"]
+users = ["10", "50", "100"]
 categ_user = ["baixo", "medio", "alto"]
 data = {
     'python_redis': {'p95': [], 'failures': []},

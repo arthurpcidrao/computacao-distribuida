@@ -2,11 +2,11 @@
 
 # Script para executar testes de desempenho com Locust
 # Testa: Python com/sem Redis e Ruby com/sem Redis
-# Com 5, 30 e 80 usuários
+# Com 10, 50 e 100 usuários
 
-BAIXO=5
-MEDIO=30
-ALTO=80
+BAIXO=10
+MEDIO=50
+ALTO=100
 
 cd "$(dirname "$0")" || exit 1
 mkdir -p results

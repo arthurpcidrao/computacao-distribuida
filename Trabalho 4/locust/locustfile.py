@@ -8,7 +8,7 @@ SAMPLE_URLS = [
     "https://curlie.org/",  # 12 links
     "https://wiki.archlinux.org/",  # 108 links
     "https://help.ubuntu.com/",  # 29 links
-    "https://www.gutenberg.org/browse/categories/1.html.utf8",  # 1533 links
+    "https://ftp.gnu.org/gnu/",  # 392 links
     "https://news.ycombinator.com/",  # 225 links
     "https://archive.apache.org/dist/",  # 305 links
     "https://edition.cnn.com/",  # 491 links
