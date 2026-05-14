@@ -6,4 +6,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "locust>=2.43.4",
+    "matplotlib>=3.10.9",
+    "pandas>=2.3.3",
 ]

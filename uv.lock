@@ -1653,10 +1653,16 @@ version = "0.1.0"
 source = { virtual = "Trabalho 4" }
 dependencies = [
     { name = "locust" },
+    { name = "matplotlib" },
+    { name = "pandas" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "locust", specifier = ">=2.43.4" }]
+requires-dist = [
+    { name = "locust", specifier = ">=2.43.4" },
+    { name = "matplotlib", specifier = ">=3.10.9" },
+    { name = "pandas", specifier = ">=2.3.3" },
+]
 
 [[package]]
 name = "typing-extensions"
