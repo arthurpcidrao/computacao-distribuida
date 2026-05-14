@@ -29,7 +29,7 @@ data = {
 }
 
 # Ler CSVs
-results_dir = 'results'
+results_dir = 'locust/results'
 
 for user_count in users:
     files = {
@@ -44,8 +44,8 @@ for user_count in users:
             df = pd.read_csv(filepath)
             # P95 está na penúltima coluna antes do final
             p95_value = float(df.iloc[0, df.columns.get_loc('95%')])
-            failures = int(df.iloc[0]['Failures'])
-            total_requests = int(df.iloc[0]['Requests'])
+            failures = int(df.iloc[0]['Failure Count'])
+            total_requests = int(df.iloc[0]['Request Count'])
             failure_rate = (failures / total_requests * 100) if total_requests > 0 else 0
             
             data[config]['p95'].append(p95_value)
