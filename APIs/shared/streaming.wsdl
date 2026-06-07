@@ -1,0 +1,128 @@
+<definitions name="StreamingService"
+             targetNamespace="http://streaming.com/wsdl"
+             xmlns:tns="http://streaming.com/wsdl"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <types>
+        <xsd:schema targetNamespace="http://streaming.com/wsdl">
+            <xsd:element name="ListarUsuariosRequest">
+                <xsd:complexType><xsd:sequence/></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="ListarUsuariosResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="usuarios" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="id" type="xsd:string"/>
+                                    <xsd:element name="nome" type="xsd:string"/>
+                                    <xsd:element name="idade" type="xsd:int"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="ListarMusicasRequest">
+                <xsd:complexType><xsd:sequence/></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="ListarMusicasResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="musicas" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="id" type="xsd:string"/>
+                                    <xsd:element name="nome" type="xsd:string"/>
+                                    <xsd:element name="artista" type="xsd:string"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="CriarUsuarioRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="nome" type="xsd:string"/>
+                        <xsd:element name="idade" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="CriarUsuarioResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="id" type="xsd:string"/>
+                        <xsd:element name="nome" type="xsd:string"/>
+                        <xsd:element name="idade" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Other entities omitted for simplicity in this basic load test stub -->
+        </xsd:schema>
+    </types>
+
+    <message name="ListarUsuariosInput">
+        <part name="parameters" element="tns:ListarUsuariosRequest"/>
+    </message>
+    <message name="ListarUsuariosOutput">
+        <part name="parameters" element="tns:ListarUsuariosResponse"/>
+    </message>
+    <message name="ListarMusicasInput">
+        <part name="parameters" element="tns:ListarMusicasRequest"/>
+    </message>
+    <message name="ListarMusicasOutput">
+        <part name="parameters" element="tns:ListarMusicasResponse"/>
+    </message>
+    <message name="CriarUsuarioInput">
+        <part name="parameters" element="tns:CriarUsuarioRequest"/>
+    </message>
+    <message name="CriarUsuarioOutput">
+        <part name="parameters" element="tns:CriarUsuarioResponse"/>
+    </message>
+
+    <portType name="StreamingPortType">
+        <operation name="ListarUsuarios">
+            <input message="tns:ListarUsuariosInput"/>
+            <output message="tns:ListarUsuariosOutput"/>
+        </operation>
+        <operation name="ListarMusicas">
+            <input message="tns:ListarMusicasInput"/>
+            <output message="tns:ListarMusicasOutput"/>
+        </operation>
+        <operation name="CriarUsuario">
+            <input message="tns:CriarUsuarioInput"/>
+            <output message="tns:CriarUsuarioOutput"/>
+        </operation>
+    </portType>
+
+    <binding name="StreamingBinding" type="tns:StreamingPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="ListarUsuarios">
+            <soap:operation soapAction="http://streaming.com/ListarUsuarios"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="ListarMusicas">
+            <soap:operation soapAction="http://streaming.com/ListarMusicas"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+        <operation name="CriarUsuario">
+            <soap:operation soapAction="http://streaming.com/CriarUsuario"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+    </binding>
+
+    <service name="StreamingService">
+        <port name="StreamingPort" binding="tns:StreamingBinding">
+            <soap:address location="http://localhost:8013/soap"/>
+        </port>
+    </service>
+</definitions>
