@@ -5,26 +5,20 @@ import uuid
 
 app = FastAPI(title="Streaming REST API (Python)")
 
-class UsuarioBase(BaseModel):
+class Usuario(BaseModel):
+    id: str
     nome: str
     idade: int
 
-class Usuario(UsuarioBase):
+class Musica(BaseModel):
     id: str
-
-class MusicaBase(BaseModel):
     nome: str
     artista: str
 
-class Musica(MusicaBase):
+class Playlist(BaseModel):
     id: str
-
-class PlaylistBase(BaseModel):
     nome: str
     usuario_id: str
-
-class Playlist(PlaylistBase):
-    id: str
 
 class MusicaPlaylist(BaseModel):
     musica_id: str
@@ -40,30 +34,27 @@ def listar_usuarios():
     return usuarios_db
 
 @app.post("/usuarios", response_model=Usuario, status_code=201)
-def criar_usuario(user: UsuarioBase):
-    novo_usuario = Usuario(id=str(uuid.uuid4()), **user.dict())
-    usuarios_db.append(novo_usuario)
-    return novo_usuario
+def criar_usuario(user: Usuario):
+    usuarios_db.append(user)
+    return user
 
 @app.get("/musicas", response_model=List[Musica])
 def listar_musicas():
     return musicas_db
 
 @app.post("/musicas", response_model=Musica, status_code=201)
-def criar_musica(musica: MusicaBase):
-    nova_musica = Musica(id=str(uuid.uuid4()), **musica.dict())
-    musicas_db.append(nova_musica)
-    return nova_musica
+def criar_musica(musica: Musica):
+    musicas_db.append(musica)
+    return musica
 
 @app.get("/usuarios/{id}/playlists", response_model=List[Playlist])
 def listar_playlists_usuario(id: str):
     return [p for p in playlists_db if p.usuario_id == id]
 
 @app.post("/playlists", response_model=Playlist, status_code=201)
-def criar_playlist(playlist: PlaylistBase):
-    nova_playlist = Playlist(id=str(uuid.uuid4()), **playlist.dict())
-    playlists_db.append(nova_playlist)
-    return nova_playlist
+def criar_playlist(playlist: Playlist):
+    playlists_db.append(playlist)
+    return playlist
 
 @app.get("/playlists/{id}/musicas", response_model=List[Musica])
 def listar_musicas_playlist(id: str):

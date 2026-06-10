@@ -1,5 +1,4 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 app.use(express.json());
@@ -14,9 +13,8 @@ app.get('/usuarios', (req, res) => {
 });
 
 app.post('/usuarios', (req, res) => {
-    const user = { id: uuidv4(), nome: req.body.nome, idade: req.body.idade };
-    usuarios_db.push(user);
-    res.status(201).json(user);
+    usuarios_db.push(req.body);
+    res.status(201).json(req.body);
 });
 
 app.get('/musicas', (req, res) => {
@@ -24,9 +22,8 @@ app.get('/musicas', (req, res) => {
 });
 
 app.post('/musicas', (req, res) => {
-    const musica = { id: uuidv4(), nome: req.body.nome, artista: req.body.artista };
-    musicas_db.push(musica);
-    res.status(201).json(musica);
+    musicas_db.push(req.body);
+    res.status(201).json(req.body);
 });
 
 app.get('/usuarios/:id/playlists', (req, res) => {
@@ -35,9 +32,8 @@ app.get('/usuarios/:id/playlists', (req, res) => {
 });
 
 app.post('/playlists', (req, res) => {
-    const playlist = { id: uuidv4(), nome: req.body.nome, usuario_id: req.body.usuario_id };
-    playlists_db.push(playlist);
-    res.status(201).json(playlist);
+    playlists_db.push(req.body);
+    res.status(201).json(req.body);
 });
 
 app.get('/playlists/:id/musicas', (req, res) => {
@@ -57,6 +53,6 @@ app.get('/musicas/:id/playlists', (req, res) => {
     res.json(playlists);
 });
 
-app.listen(8011, () => {
-    console.log('REST API (Node.js) listening on port 8011');
+app.listen(9001, () => {
+    console.log('REST API (Node.js) listening on port 9001');
 });

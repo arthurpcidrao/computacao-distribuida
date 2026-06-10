@@ -67,4 +67,27 @@ Todas as 8 APIs (4 Python + 4 Node.js) implementam a mesma lógica de negócio:
 
 1.  **Python:** É recomendado o uso do gerenciador `uv`. O comando padrão é `uv run python <arquivo>.py`.
 2.  **Node.js:** Requer que as dependências tenham sido instaladas via `npm install` dentro da pasta `APIs/javascript/`. O comando padrão é `node <arquivo>.js`.
-3.  **Terminal:** O script `run_apis.sh` tenta detectar automaticamente seu emulador de terminal (Gnome, Xfce, Konsole ou Xterm).
+---
+
+## 5. Metodologia de Testes de Carga
+
+Os testes foram projetados para simular um cenário real de uso do serviço de streaming, onde múltiplos usuários interagem com o sistema simultaneamente.
+
+### Como os testes são executados:
+1.  **Isolamento:** O script `run_complete_test.sh` garante que nenhuma instância antiga das APIs esteja rodando (usando `pkill -9`).
+2.  **Inicialização:** As 8 APIs são iniciadas em background. O script aguarda 30 segundos para garantir que os servidores gRPC e SOAP (mais lentos para subir) estejam prontos.
+3.  **Aquecimento (Prepopulate):** O script `prepopulate_data.py` é executado para inserir 5 usuários, 5 músicas e 3 playlists em cada uma das 8 APIs. Isso garante que os comandos de "Listar" (GET) tenham dados para retornar.
+4.  **Carga:** O Locust é executado em modo **headless** (sem interface gráfica) por 120 segundos.
+5.  **Análise:** Os dados do CSV final são passados para o `generate_results_charts.py`, que utiliza **Pandas** para processar as métricas e **Seaborn/Matplotlib** para gerar os gráficos comparativos.
+
+### Como ajustar o equilíbrio entre GET e POST:
+Para mudar o foco do teste de "Criação" para "Consulta", localize as classes de usuário no `locustfile.py` e altere os valores dentro de `@task()`:
+*   **Aumentar GETs:** Use pesos maiores, como `@task(10)`, nas funções que começam com `listar_`.
+*   **Diminuir POSTs:** Use pesos menores, como `@task(1)`, nas funções que começam com `criar_` ou `adicionar_`.
+
+### Como rodar manualmente:
+Se você alterou o `locustfile.py` e quer apenas gerar novos dados:
+```bash
+bash run_complete_test.sh
+```
+Os resultados antigos em `final_results_stats.csv` e as imagens `.png` serão sobrescritos com os novos dados.

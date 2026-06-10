@@ -26,8 +26,7 @@ if _version_not_supported:
 
 
 class StreamingServiceStub:
-    """Serviço de Transmissão Remota
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -83,8 +82,7 @@ class StreamingServiceStub:
 
 
 class StreamingServiceServicer:
-    """Serviço de Transmissão Remota
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def ListarUsuarios(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -197,8 +195,7 @@ def add_StreamingServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class StreamingService:
-    """Serviço de Transmissão Remota
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def ListarUsuarios(request,

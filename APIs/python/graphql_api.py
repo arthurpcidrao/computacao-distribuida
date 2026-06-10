@@ -55,23 +55,28 @@ class Query:
         m_ids = [pm[1] for pm in playlist_musica_db if pm[0] == playlist_id]
         return [m for m in musicas_db if m.id in m_ids]
 
+    @strawberry.field
+    def listar_playlists_por_musica(self, musica_id: strawberry.ID) -> List[Playlist]:
+        p_ids = [pm[0] for pm in playlist_musica_db if pm[1] == musica_id]
+        return [p for p in playlists_db if p.id in p_ids]
+
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    def criar_usuario(self, nome: str, idade: int) -> Usuario:
-        u = Usuario(id=strawberry.ID(str(uuid.uuid4())), nome=nome, idade=idade)
+    def criar_usuario(self, id: strawberry.ID, nome: str, idade: int) -> Usuario:
+        u = Usuario(id=id, nome=nome, idade=idade)
         usuarios_db.append(u)
         return u
 
     @strawberry.mutation
-    def criar_musica(self, nome: str, artista: str) -> Musica:
-        m = Musica(id=strawberry.ID(str(uuid.uuid4())), nome=nome, artista=artista)
+    def criar_musica(self, id: strawberry.ID, nome: str, artista: str) -> Musica:
+        m = Musica(id=id, nome=nome, artista=artista)
         musicas_db.append(m)
         return m
 
     @strawberry.mutation
-    def criar_playlist(self, nome: str, usuario_id: strawberry.ID) -> Playlist:
-        p = Playlist(id=strawberry.ID(str(uuid.uuid4())), nome=nome, usuario_id=usuario_id)
+    def criar_playlist(self, id: strawberry.ID, nome: str, usuario_id: strawberry.ID) -> Playlist:
+        p = Playlist(id=id, nome=nome, usuario_id=usuario_id)
         playlists_db.append(p)
         return p
 

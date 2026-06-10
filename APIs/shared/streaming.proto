@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package streaming;
 
-// Entidades
 message Usuario {
   string id = 1;
   string nome = 2;
@@ -21,7 +20,6 @@ message Playlist {
   string usuario_id = 3;
 }
 
-// Mensagens de Requisição e Resposta
 message Vazio {}
 
 message IdRequest {
@@ -41,18 +39,21 @@ message ListaPlaylistsResponse {
 }
 
 message CriarUsuarioRequest {
-  string nome = 1;
-  int32 idade = 2;
+  string id = 1;
+  string nome = 2;
+  int32 idade = 3;
 }
 
 message CriarMusicaRequest {
-  string nome = 1;
-  string artista = 2;
+  string id = 1;
+  string nome = 2;
+  string artista = 3;
 }
 
 message CriarPlaylistRequest {
-  string nome = 1;
-  string usuario_id = 2;
+  string id = 1;
+  string nome = 2;
+  string usuario_id = 3;
 }
 
 message RelacaoPlaylistMusicaRequest {
@@ -60,7 +61,6 @@ message RelacaoPlaylistMusicaRequest {
   string musica_id = 2;
 }
 
-// Serviço de Transmissão Remota
 service StreamingService {
   rpc ListarUsuarios(Vazio) returns (ListaUsuariosResponse);
   rpc ListarMusicas(Vazio) returns (ListaMusicasResponse);

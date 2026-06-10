@@ -1,5 +1,4 @@
 const { ApolloServer, gql } = require('apollo-server');
-const { v4: uuidv4 } = require('uuid');
 
 const usuarios_db = [];
 const musicas_db = [];
@@ -7,25 +6,9 @@ const playlists_db = [];
 const playlist_musica_db = [];
 
 const typeDefs = gql`
-  type Usuario {
-    id: ID!
-    nome: String!
-    idade: Int!
-    playlists: [Playlist!]!
-  }
-
-  type Musica {
-    id: ID!
-    nome: String!
-    artista: String!
-  }
-
-  type Playlist {
-    id: ID!
-    nome: String!
-    usuario: Usuario!
-    musicas: [Musica!]!
-  }
+  type Usuario { id: ID!, nome: String!, idade: Int!, playlists: [Playlist!]! }
+  type Musica { id: ID!, nome: String!, artista: String! }
+  type Playlist { id: ID!, nome: String!, usuario: Usuario!, musicas: [Musica!]! }
 
   type Query {
     listarUsuarios: [Usuario!]!
@@ -36,9 +19,9 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    criarUsuario(nome: String!, idade: Int!): Usuario!
-    criarMusica(nome: String!, artista: String!): Musica!
-    criarPlaylist(nome: String!, usuarioId: ID!): Playlist!
+    criarUsuario(id: ID!, nome: String!, idade: Int!): Usuario!
+    criarMusica(id: ID!, nome: String!, artista: String!): Musica!
+    criarPlaylist(id: ID!, nome: String!, usuarioId: ID!): Playlist!
     adicionarMusicaPlaylist(playlistId: ID!, musicaId: ID!): Playlist!
   }
 `;
@@ -58,29 +41,15 @@ const resolvers = {
     }
   },
   Mutation: {
-    criarUsuario: (_, { nome, idade }) => {
-      const u = { id: uuidv4(), nome, idade };
-      usuarios_db.push(u);
-      return u;
-    },
-    criarMusica: (_, { nome, artista }) => {
-      const m = { id: uuidv4(), nome, artista };
-      musicas_db.push(m);
-      return m;
-    },
-    criarPlaylist: (_, { nome, usuarioId }) => {
-      const p = { id: uuidv4(), nome, usuario_id: usuarioId };
-      playlists_db.push(p);
-      return p;
-    },
+    criarUsuario: (_, args) => { usuarios_db.push(args); return args; },
+    criarMusica: (_, args) => { musicas_db.push(args); return args; },
+    criarPlaylist: (_, args) => { playlists_db.push(args); return args; },
     adicionarMusicaPlaylist: (_, { playlistId, musicaId }) => {
       playlist_musica_db.push([playlistId, musicaId]);
       return playlists_db.find(p => p.id === playlistId);
     }
   },
-  Usuario: {
-    playlists: (parent) => playlists_db.filter(p => p.usuario_id === parent.id)
-  },
+  Usuario: { playlists: (parent) => playlists_db.filter(p => p.usuario_id === parent.id) },
   Playlist: {
     usuario: (parent) => usuarios_db.find(u => u.id === parent.usuario_id),
     musicas: (parent) => {
@@ -92,6 +61,6 @@ const resolvers = {
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
-server.listen({ port: 8012 }).then(({ url }) => {
+server.listen({ port: 9002 }).then(({ url }) => {
   console.log(`GraphQL API (Node.js) ready at ${url}`);
 });

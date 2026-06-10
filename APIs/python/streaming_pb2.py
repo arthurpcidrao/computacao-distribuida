@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fstreaming.proto\x12\tstreaming\"2\n\x07Usuario\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\r\n\x05idade\x18\x03 \x01(\x05\"3\n\x06Musica\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\x0f\n\x07\x61rtista\x18\x03 \x01(\t\"8\n\x08Playlist\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\x12\n\nusuario_id\x18\x03 \x01(\t\"\x07\n\x05Vazio\"\x17\n\tIdRequest\x12\n\n\x02id\x18\x01 \x01(\t\"=\n\x15ListaUsuariosResponse\x12$\n\x08usuarios\x18\x01 \x03(\x0b\x32\x12.streaming.Usuario\":\n\x14ListaMusicasResponse\x12\"\n\x07musicas\x18\x01 \x03(\x0b\x32\x11.streaming.Musica\"@\n\x16ListaPlaylistsResponse\x12&\n\tplaylists\x18\x01 \x03(\x0b\x32\x13.streaming.Playlist\"2\n\x13\x43riarUsuarioRequest\x12\x0c\n\x04nome\x18\x01 \x01(\t\x12\r\n\x05idade\x18\x02 \x01(\x05\"3\n\x12\x43riarMusicaRequest\x12\x0c\n\x04nome\x18\x01 \x01(\t\x12\x0f\n\x07\x61rtista\x18\x02 \x01(\t\"8\n\x14\x43riarPlaylistRequest\x12\x0c\n\x04nome\x18\x01 \x01(\t\x12\x12\n\nusuario_id\x18\x02 \x01(\t\"F\n\x1cRelacaoPlaylistMusicaRequest\x12\x13\n\x0bplaylist_id\x18\x01 \x01(\t\x12\x11\n\tmusica_id\x18\x02 \x01(\t2\xbf\x05\n\x10StreamingService\x12\x44\n\x0eListarUsuarios\x12\x10.streaming.Vazio\x1a .streaming.ListaUsuariosResponse\x12\x42\n\rListarMusicas\x12\x10.streaming.Vazio\x1a\x1f.streaming.ListaMusicasResponse\x12T\n\x19ListarPlaylistsPorUsuario\x12\x14.streaming.IdRequest\x1a!.streaming.ListaPlaylistsResponse\x12Q\n\x18ListarMusicasPorPlaylist\x12\x14.streaming.IdRequest\x1a\x1f.streaming.ListaMusicasResponse\x12S\n\x18ListarPlaylistsPorMusica\x12\x14.streaming.IdRequest\x1a!.streaming.ListaPlaylistsResponse\x12\x42\n\x0c\x43riarUsuario\x12\x1e.streaming.CriarUsuarioRequest\x1a\x12.streaming.Usuario\x12?\n\x0b\x43riarMusica\x12\x1d.streaming.CriarMusicaRequest\x1a\x11.streaming.Musica\x12\x45\n\rCriarPlaylist\x12\x1f.streaming.CriarPlaylistRequest\x1a\x13.streaming.Playlist\x12W\n\x17\x41\x64icionarMusicaPlaylist\x12\'.streaming.RelacaoPlaylistMusicaRequest\x1a\x13.streaming.Playlistb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fstreaming.proto\x12\tstreaming\"2\n\x07Usuario\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\r\n\x05idade\x18\x03 \x01(\x05\"3\n\x06Musica\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\x0f\n\x07\x61rtista\x18\x03 \x01(\t\"8\n\x08Playlist\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\x12\n\nusuario_id\x18\x03 \x01(\t\"\x07\n\x05Vazio\"\x17\n\tIdRequest\x12\n\n\x02id\x18\x01 \x01(\t\"=\n\x15ListaUsuariosResponse\x12$\n\x08usuarios\x18\x01 \x03(\x0b\x32\x12.streaming.Usuario\":\n\x14ListaMusicasResponse\x12\"\n\x07musicas\x18\x01 \x03(\x0b\x32\x11.streaming.Musica\"@\n\x16ListaPlaylistsResponse\x12&\n\tplaylists\x18\x01 \x03(\x0b\x32\x13.streaming.Playlist\">\n\x13\x43riarUsuarioRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\r\n\x05idade\x18\x03 \x01(\x05\"?\n\x12\x43riarMusicaRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\x0f\n\x07\x61rtista\x18\x03 \x01(\t\"D\n\x14\x43riarPlaylistRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04nome\x18\x02 \x01(\t\x12\x12\n\nusuario_id\x18\x03 \x01(\t\"F\n\x1cRelacaoPlaylistMusicaRequest\x12\x13\n\x0bplaylist_id\x18\x01 \x01(\t\x12\x11\n\tmusica_id\x18\x02 \x01(\t2\xbf\x05\n\x10StreamingService\x12\x44\n\x0eListarUsuarios\x12\x10.streaming.Vazio\x1a .streaming.ListaUsuariosResponse\x12\x42\n\rListarMusicas\x12\x10.streaming.Vazio\x1a\x1f.streaming.ListaMusicasResponse\x12T\n\x19ListarPlaylistsPorUsuario\x12\x14.streaming.IdRequest\x1a!.streaming.ListaPlaylistsResponse\x12Q\n\x18ListarMusicasPorPlaylist\x12\x14.streaming.IdRequest\x1a\x1f.streaming.ListaMusicasResponse\x12S\n\x18ListarPlaylistsPorMusica\x12\x14.streaming.IdRequest\x1a!.streaming.ListaPlaylistsResponse\x12\x42\n\x0c\x43riarUsuario\x12\x1e.streaming.CriarUsuarioRequest\x1a\x12.streaming.Usuario\x12?\n\x0b\x43riarMusica\x12\x1d.streaming.CriarMusicaRequest\x1a\x11.streaming.Musica\x12\x45\n\rCriarPlaylist\x12\x1f.streaming.CriarPlaylistRequest\x1a\x13.streaming.Playlist\x12W\n\x17\x41\x64icionarMusicaPlaylist\x12\'.streaming.RelacaoPlaylistMusicaRequest\x1a\x13.streaming.Playlistb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -48,13 +48,13 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_LISTAPLAYLISTSRESPONSE']._serialized_start=350
   _globals['_LISTAPLAYLISTSRESPONSE']._serialized_end=414
   _globals['_CRIARUSUARIOREQUEST']._serialized_start=416
-  _globals['_CRIARUSUARIOREQUEST']._serialized_end=466
-  _globals['_CRIARMUSICAREQUEST']._serialized_start=468
-  _globals['_CRIARMUSICAREQUEST']._serialized_end=519
-  _globals['_CRIARPLAYLISTREQUEST']._serialized_start=521
-  _globals['_CRIARPLAYLISTREQUEST']._serialized_end=577
-  _globals['_RELACAOPLAYLISTMUSICAREQUEST']._serialized_start=579
-  _globals['_RELACAOPLAYLISTMUSICAREQUEST']._serialized_end=649
-  _globals['_STREAMINGSERVICE']._serialized_start=652
-  _globals['_STREAMINGSERVICE']._serialized_end=1355
+  _globals['_CRIARUSUARIOREQUEST']._serialized_end=478
+  _globals['_CRIARMUSICAREQUEST']._serialized_start=480
+  _globals['_CRIARMUSICAREQUEST']._serialized_end=543
+  _globals['_CRIARPLAYLISTREQUEST']._serialized_start=545
+  _globals['_CRIARPLAYLISTREQUEST']._serialized_end=613
+  _globals['_RELACAOPLAYLISTMUSICAREQUEST']._serialized_start=615
+  _globals['_RELACAOPLAYLISTMUSICAREQUEST']._serialized_end=685
+  _globals['_STREAMINGSERVICE']._serialized_start=688
+  _globals['_STREAMINGSERVICE']._serialized_end=1391
 # @@protoc_insertion_point(module_scope)

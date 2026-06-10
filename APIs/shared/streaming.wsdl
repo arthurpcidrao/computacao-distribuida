@@ -7,122 +7,118 @@
 
     <types>
         <xsd:schema targetNamespace="http://streaming.com/wsdl">
-            <xsd:element name="ListarUsuariosRequest">
-                <xsd:complexType><xsd:sequence/></xsd:complexType>
-            </xsd:element>
-            <xsd:element name="ListarUsuariosResponse">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="usuarios" minOccurs="0" maxOccurs="unbounded">
-                            <xsd:complexType>
-                                <xsd:sequence>
-                                    <xsd:element name="id" type="xsd:string"/>
-                                    <xsd:element name="nome" type="xsd:string"/>
-                                    <xsd:element name="idade" type="xsd:int"/>
-                                </xsd:sequence>
-                            </xsd:complexType>
-                        </xsd:element>
-                    </xsd:sequence>
-                </xsd:complexType>
+            <!-- Entidades -->
+            <xsd:complexType name="Usuario">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:string"/>
+                    <xsd:element name="nome" type="xsd:string"/>
+                    <xsd:element name="idade" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="Musica">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:string"/>
+                    <xsd:element name="nome" type="xsd:string"/>
+                    <xsd:element name="artista" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="Playlist">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:string"/>
+                    <xsd:element name="nome" type="xsd:string"/>
+                    <xsd:element name="usuario_id" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Requests -->
+            <xsd:element name="Vazio"><xsd:complexType/></xsd:element>
+            <xsd:element name="IdRequest">
+                <xsd:complexType><xsd:sequence><xsd:element name="id" type="xsd:string"/></xsd:sequence></xsd:complexType>
             </xsd:element>
 
-            <xsd:element name="ListarMusicasRequest">
-                <xsd:complexType><xsd:sequence/></xsd:complexType>
+            <!-- Responses -->
+            <xsd:element name="ListarUsuariosResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="usuarios" type="tns:Usuario" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>
             </xsd:element>
             <xsd:element name="ListarMusicasResponse">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="musicas" minOccurs="0" maxOccurs="unbounded">
-                            <xsd:complexType>
-                                <xsd:sequence>
-                                    <xsd:element name="id" type="xsd:string"/>
-                                    <xsd:element name="nome" type="xsd:string"/>
-                                    <xsd:element name="artista" type="xsd:string"/>
-                                </xsd:sequence>
-                            </xsd:complexType>
-                        </xsd:element>
-                    </xsd:sequence>
-                </xsd:complexType>
+                <xsd:complexType><xsd:sequence><xsd:element name="musicas" type="tns:Musica" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>
             </xsd:element>
-            
+            <xsd:element name="ListarPlaylistsResponse">
+                <xsd:complexType><xsd:sequence><xsd:element name="playlists" type="tns:Playlist" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+
+            <!-- Seeding operations (with ID) -->
             <xsd:element name="CriarUsuarioRequest">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="nome" type="xsd:string"/>
-                        <xsd:element name="idade" type="xsd:int"/>
-                    </xsd:sequence>
-                </xsd:complexType>
+                <xsd:complexType><xsd:sequence><xsd:element name="id" type="xsd:string"/><xsd:element name="nome" type="xsd:string"/><xsd:element name="idade" type="xsd:int"/></xsd:sequence></xsd:complexType>
             </xsd:element>
-            <xsd:element name="CriarUsuarioResponse">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="id" type="xsd:string"/>
-                        <xsd:element name="nome" type="xsd:string"/>
-                        <xsd:element name="idade" type="xsd:int"/>
-                    </xsd:sequence>
-                </xsd:complexType>
+            <xsd:element name="CriarMusicaRequest">
+                <xsd:complexType><xsd:sequence><xsd:element name="id" type="xsd:string"/><xsd:element name="nome" type="xsd:string"/><xsd:element name="artista" type="xsd:string"/></xsd:sequence></xsd:complexType>
             </xsd:element>
-            
-            <!-- Other entities omitted for simplicity in this basic load test stub -->
+            <xsd:element name="CriarPlaylistRequest">
+                <xsd:complexType><xsd:sequence><xsd:element name="id" type="xsd:string"/><xsd:element name="nome" type="xsd:string"/><xsd:element name="usuario_id" type="xsd:string"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+            <xsd:element name="AdicionarMusicaPlaylistRequest">
+                <xsd:complexType><xsd:sequence><xsd:element name="playlist_id" type="xsd:string"/><xsd:element name="musica_id" type="xsd:string"/></xsd:sequence></xsd:complexType>
+            </xsd:element>
+
+            <!-- Return types as elements -->
+            <xsd:element name="Usuario" type="tns:Usuario"/>
+            <xsd:element name="Musica" type="tns:Musica"/>
+            <xsd:element name="Playlist" type="tns:Playlist"/>
         </xsd:schema>
     </types>
 
-    <message name="ListarUsuariosInput">
-        <part name="parameters" element="tns:ListarUsuariosRequest"/>
-    </message>
-    <message name="ListarUsuariosOutput">
-        <part name="parameters" element="tns:ListarUsuariosResponse"/>
-    </message>
-    <message name="ListarMusicasInput">
-        <part name="parameters" element="tns:ListarMusicasRequest"/>
-    </message>
-    <message name="ListarMusicasOutput">
-        <part name="parameters" element="tns:ListarMusicasResponse"/>
-    </message>
-    <message name="CriarUsuarioInput">
-        <part name="parameters" element="tns:CriarUsuarioRequest"/>
-    </message>
-    <message name="CriarUsuarioOutput">
-        <part name="parameters" element="tns:CriarUsuarioResponse"/>
-    </message>
+    <!-- Messages -->
+    <message name="ListarUsuariosInput"><part name="parameters" element="tns:Vazio"/></message>
+    <message name="ListarUsuariosOutput"><part name="parameters" element="tns:ListarUsuariosResponse"/></message>
+    <message name="ListarMusicasInput"><part name="parameters" element="tns:Vazio"/></message>
+    <message name="ListarMusicasOutput"><part name="parameters" element="tns:ListarMusicasResponse"/></message>
+    <message name="IdInput"><part name="parameters" element="tns:IdRequest"/></message>
+    <message name="ListaPlaylistsOutput"><part name="parameters" element="tns:ListarPlaylistsResponse"/></message>
+    <message name="ListaMusicasOutput"><part name="parameters" element="tns:ListarMusicasResponse"/></message>
 
+    <message name="CriarUsuarioInput"><part name="parameters" element="tns:CriarUsuarioRequest"/></message>
+    <message name="CriarUsuarioOutput"><part name="parameters" element="tns:Usuario"/></message>
+    <message name="CriarMusicaInput"><part name="parameters" element="tns:CriarMusicaRequest"/></message>
+    <message name="CriarMusicaOutput"><part name="parameters" element="tns:Musica"/></message>
+    <message name="CriarPlaylistInput"><part name="parameters" element="tns:CriarPlaylistRequest"/></message>
+    <message name="CriarPlaylistOutput"><part name="parameters" element="tns:Playlist"/></message>
+    <message name="AdicionarMusicaPlaylistInput"><part name="parameters" element="tns:AdicionarMusicaPlaylistRequest"/></message>
+    <message name="AdicionarMusicaPlaylistOutput"><part name="parameters" element="tns:Playlist"/></message>
+
+    <!-- PortType -->
     <portType name="StreamingPortType">
-        <operation name="ListarUsuarios">
-            <input message="tns:ListarUsuariosInput"/>
-            <output message="tns:ListarUsuariosOutput"/>
-        </operation>
-        <operation name="ListarMusicas">
-            <input message="tns:ListarMusicasInput"/>
-            <output message="tns:ListarMusicasOutput"/>
-        </operation>
-        <operation name="CriarUsuario">
-            <input message="tns:CriarUsuarioInput"/>
-            <output message="tns:CriarUsuarioOutput"/>
-        </operation>
+        <operation name="ListarUsuarios"><input message="tns:ListarUsuariosInput"/><output message="tns:ListarUsuariosOutput"/></operation>
+        <operation name="ListarMusicas"><input message="tns:ListarMusicasInput"/><output message="tns:ListarMusicasOutput"/></operation>
+        <operation name="ListarPlaylistsPorUsuario"><input message="tns:IdInput"/><output message="tns:ListaPlaylistsOutput"/></operation>
+        <operation name="ListarMusicasPorPlaylist"><input message="tns:IdInput"/><output message="tns:ListaMusicasOutput"/></operation>
+        <operation name="ListarPlaylistsPorMusica"><input message="tns:IdInput"/><output message="tns:ListaPlaylistsOutput"/></operation>
+        
+        <operation name="CriarUsuario"><input message="tns:CriarUsuarioInput"/><output message="tns:CriarUsuarioOutput"/></operation>
+        <operation name="CriarMusica"><input message="tns:CriarMusicaInput"/><output message="tns:CriarMusicaOutput"/></operation>
+        <operation name="CriarPlaylist"><input message="tns:CriarPlaylistInput"/><output message="tns:CriarPlaylistOutput"/></operation>
+        <operation name="AdicionarMusicaPlaylist"><input message="tns:AdicionarMusicaPlaylistInput"/><output message="tns:AdicionarMusicaPlaylistOutput"/></operation>
     </portType>
 
+    <!-- Binding -->
     <binding name="StreamingBinding" type="tns:StreamingPortType">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-        <operation name="ListarUsuarios">
-            <soap:operation soapAction="http://streaming.com/ListarUsuarios"/>
-            <input><soap:body use="literal"/></input>
-            <output><soap:body use="literal"/></output>
-        </operation>
-        <operation name="ListarMusicas">
-            <soap:operation soapAction="http://streaming.com/ListarMusicas"/>
-            <input><soap:body use="literal"/></input>
-            <output><soap:body use="literal"/></output>
-        </operation>
-        <operation name="CriarUsuario">
-            <soap:operation soapAction="http://streaming.com/CriarUsuario"/>
-            <input><soap:body use="literal"/></input>
-            <output><soap:body use="literal"/></output>
-        </operation>
+        <operation name="ListarUsuarios"><soap:operation soapAction="ListarUsuarios"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+        <operation name="ListarMusicas"><soap:operation soapAction="ListarMusicas"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+        <operation name="ListarPlaylistsPorUsuario"><soap:operation soapAction="ListarPlaylistsPorUsuario"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+        <operation name="ListarMusicasPorPlaylist"><soap:operation soapAction="ListarMusicasPorPlaylist"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+        <operation name="ListarPlaylistsPorMusica"><soap:operation soapAction="ListarPlaylistsPorMusica"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+        
+        <operation name="CriarUsuario"><soap:operation soapAction="CriarUsuario"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+        <operation name="CriarMusica"><soap:operation soapAction="CriarMusica"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+        <operation name="CriarPlaylist"><soap:operation soapAction="CriarPlaylist"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+        <operation name="AdicionarMusicaPlaylist"><soap:operation soapAction="AdicionarMusicaPlaylist"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
     </binding>
 
+    <!-- Service -->
     <service name="StreamingService">
         <port name="StreamingPort" binding="tns:StreamingBinding">
-            <soap:address location="http://localhost:8013/soap"/>
+            <soap:address location="http://localhost:9004/soap"/>
         </port>
     </service>
 </definitions>

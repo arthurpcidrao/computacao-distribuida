@@ -5,16 +5,19 @@ from wsgiref.simple_server import make_server
 import uuid
 
 class UsuarioModel(ComplexModel):
+    __namespace__ = "http://streaming.com/wsdl"
     id = Unicode
     nome = Unicode
     idade = Integer
 
 class MusicaModel(ComplexModel):
+    __namespace__ = "http://streaming.com/wsdl"
     id = Unicode
     nome = Unicode
     artista = Unicode
 
 class PlaylistModel(ComplexModel):
+    __namespace__ = "http://streaming.com/wsdl"
     id = Unicode
     nome = Unicode
     usuario_id = Unicode
@@ -33,21 +36,35 @@ class StreamingService(ServiceBase):
     def ListarMusicas(ctx):
         return musicas_db
 
-    @rpc(Unicode, Integer, _returns=UsuarioModel)
-    def CriarUsuario(ctx, nome, idade):
-        u = UsuarioModel(id=str(uuid.uuid4()), nome=nome, idade=idade)
+    @rpc(Unicode, _returns=Array(PlaylistModel))
+    def ListarPlaylistsPorUsuario(ctx, id):
+        return [p for p in playlists_db if p.usuario_id == id]
+
+    @rpc(Unicode, _returns=Array(MusicaModel))
+    def ListarMusicasPorPlaylist(ctx, id):
+        m_ids = [pm[1] for pm in playlist_musica_db if pm[0] == id]
+        return [m for m in musicas_db if m.id in m_ids]
+
+    @rpc(Unicode, _returns=Array(PlaylistModel))
+    def ListarPlaylistsPorMusica(ctx, id):
+        p_ids = [pm[0] for pm in playlist_musica_db if pm[1] == id]
+        return [p for p in playlists_db if p.id in p_ids]
+
+    @rpc(Unicode, Unicode, Integer, _returns=UsuarioModel)
+    def CriarUsuario(ctx, id, nome, idade):
+        u = UsuarioModel(id=id, nome=nome, idade=idade)
         usuarios_db.append(u)
         return u
 
-    @rpc(Unicode, Unicode, _returns=MusicaModel)
-    def CriarMusica(ctx, nome, artista):
-        m = MusicaModel(id=str(uuid.uuid4()), nome=nome, artista=artista)
+    @rpc(Unicode, Unicode, Unicode, _returns=MusicaModel)
+    def CriarMusica(ctx, id, nome, artista):
+        m = MusicaModel(id=id, nome=nome, artista=artista)
         musicas_db.append(m)
         return m
 
-    @rpc(Unicode, Unicode, _returns=PlaylistModel)
-    def CriarPlaylist(ctx, nome, usuario_id):
-        p = PlaylistModel(id=str(uuid.uuid4()), nome=nome, usuario_id=usuario_id)
+    @rpc(Unicode, Unicode, Unicode, _returns=PlaylistModel)
+    def CriarPlaylist(ctx, id, nome, usuario_id):
+        p = PlaylistModel(id=id, nome=nome, usuario_id=usuario_id)
         playlists_db.append(p)
         return p
 
@@ -55,15 +72,6 @@ class StreamingService(ServiceBase):
     def AdicionarMusicaPlaylist(ctx, playlist_id, musica_id):
         playlist_musica_db.append((playlist_id, musica_id))
         return next(p for p in playlists_db if p.id == playlist_id)
-
-    @rpc(Unicode, _returns=Array(PlaylistModel))
-    def ListarPlaylistsPorUsuario(ctx, usuario_id):
-        return [p for p in playlists_db if p.usuario_id == usuario_id]
-
-    @rpc(Unicode, _returns=Array(MusicaModel))
-    def ListarMusicasPorPlaylist(ctx, playlist_id):
-        m_ids = [pm[1] for pm in playlist_musica_db if pm[0] == playlist_id]
-        return [m for m in musicas_db if m.id in m_ids]
 
 application = Application(
     [StreamingService],
@@ -75,6 +83,6 @@ application = Application(
 wsgi_application = WsgiApplication(application)
 
 if __name__ == '__main__':
-    print("SOAP server (Python) started on port 8003")
-    server = make_server('0.0.0.0', 8003, wsgi_application)
+    print("SOAP server (Python) started on port 8004")
+    server = make_server('0.0.0.0', 8004, wsgi_application)
     server.serve_forever()
