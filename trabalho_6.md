@@ -35,50 +35,97 @@ chmod +x run_tests.sh
 
 ---
 
-## 4. Guia de Teste CRUD via CLI (cURL)
+### 4. Guia de Teste CRUD via CLI (cURL)
 
-Abaixo estão os comandos para testar a criação (POST/Mutation) e recuperação (GET/Query) de dados em cada arquitetura. 
-*Nota: Utilize as portas **8001-8004** para Python e **9001-9004** para Node.js.*
+As operações de **Update** e **Delete** utilizam o atributo `id` como identificador único para garantir que apenas o registro específico seja afetado, seguindo as regras de integridade do sistema.
 
 ### 4.1. REST (Portas 8001/9001)
-- **Criar Usuário (POST):**
+- **Create (POST):**
 ```bash
 curl -X POST http://localhost:9001/usuarios -H "Content-Type: application/json" -d '{"id":"u1001","nome":"Novo Usuario","idade":30}'
 ```
-- **Recuperar Usuários (GET):**
+- **Read All (GET):**
 ```bash
 curl http://localhost:9001/usuarios
 ```
+- **Read Single (GET):**
+```bash
+curl http://localhost:9001/usuarios/u1001
+```
+- **Update (PUT):**
+```bash
+curl -X PUT http://localhost:9001/usuarios/u1001 -H "Content-Type: application/json" -d '{"nome":"Nome Atualizado","idade":31}'
+```
+- **Delete (DELETE):**
+```bash
+curl -X DELETE http://localhost:9001/usuarios/u1001
+```
 
 ### 4.2. GraphQL (Portas 8002/9002)
-- **Criar Música (Mutation):**
+- **Create (Mutation):**
 ```bash
-curl -X POST http://localhost:9002 -H "Content-Type: application/json" -d '{"query": "mutation { criarMusica(id:\"m1001\", nome:\"Nova Musica\", artista:\"Novo Artista\") { id nome } }"}'
+curl -X POST http://localhost:9002 -H "Content-Type: application/json" -d '{"query": "mutation { criarUsuario(id:\"u1001\", nome:\"GQL User\", idade:20) { id } }"}'
 ```
-- **Listar Usuários (Query):**
+- **Read All (Query):**
 ```bash
 curl -X POST http://localhost:9002 -H "Content-Type: application/json" -d '{"query": "{ listarUsuarios { id nome idade } }"}'
+```
+- **Read Single (Query):**
+```bash
+curl -X POST http://localhost:9002 -H "Content-Type: application/json" -d '{"query": "{ obterUsuario(id: \"u1001\") { id nome idade } }"}'
+```
+- **Update (Mutation):**
+```bash
+curl -X POST http://localhost:9002 -H "Content-Type: application/json" -d '{"query": "mutation { atualizarUsuario(id:\"u1001\", nome:\"GQL Atualizado\", idade:21) { id nome } }"}'
+```
+- **Delete (Mutation):**
+```bash
+curl -X POST http://localhost:9002 -H "Content-Type: application/json" -d '{"query": "mutation { deletarUsuario(id:\"u1001\") }"}'
 ```
 
 ### 4.3. gRPC (Portas 8003/9003)
 *Requer `grpcurl` instalado.*
-- **Criar Playlist:**
+- **Create:**
 ```bash
-grpcurl -plaintext -proto APIs/shared/streaming.proto -d '{"id": "p101", "nome": "Minha Playlist", "usuario_id": "u1"}' localhost:9003 streaming.StreamingService/CriarPlaylist
+grpcurl -plaintext -proto APIs/shared/streaming.proto -d '{"id": "u1001", "nome": "gRPC User", "idade": 40}' localhost:9003 streaming.StreamingService/CriarUsuario
 ```
-- **Listar Usuários:**
+- **Read All:**
 ```bash
 grpcurl -plaintext -proto APIs/shared/streaming.proto localhost:9003 streaming.StreamingService/ListarUsuarios
 ```
+- **Read Single:**
+```bash
+grpcurl -plaintext -proto APIs/shared/streaming.proto -d '{"id": "u1001"}' localhost:9003 streaming.StreamingService/ObterUsuario
+```
+- **Update:**
+```bash
+grpcurl -plaintext -proto APIs/shared/streaming.proto -d '{"id": "u1001", "nome": "gRPC Atualizado", "idade": 41}' localhost:9003 streaming.StreamingService/AtualizarUsuario
+```
+- **Delete:**
+```bash
+grpcurl -plaintext -proto APIs/shared/streaming.proto -d '{"id": "u1001"}' localhost:9003 streaming.StreamingService/DeletarUsuario
+```
 
 ### 4.4. SOAP (Portas 8004/9004)
-- **Criar Usuário:**
+- **Create:**
 ```bash
-curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:CriarUsuarioRequest><wsdl:id>u2000</wsdl:id><wsdl:nome>Soap User</wsdl:nome><wsdl:idade>45</wsdl:idade></wsdl:CriarUsuarioRequest></soapenv:Body></soapenv:Envelope>'
+curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:CriarUsuario><wsdl:id>u2000</wsdl:id><wsdl:nome>Soap User</wsdl:nome><wsdl:idade>45</wsdl:idade></wsdl:CriarUsuario></soapenv:Body></soapenv:Envelope>'
 ```
-- **Listar Usuários:**
+- **Read All:**
 ```bash
 curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:ListarUsuarios/></soapenv:Body></soapenv:Envelope>'
+```
+- **Read Single:**
+```bash
+curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:ObterUsuario><wsdl:id>u1001</wsdl:id></wsdl:ObterUsuario></soapenv:Body></soapenv:Envelope>'
+```
+- **Update:**
+```bash
+curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:AtualizarUsuario><wsdl:id>u2000</wsdl:id><wsdl:nome>Soap Atualizado</wsdl:nome><wsdl:idade>46</wsdl:idade></wsdl:AtualizarUsuario></soapenv:Body></soapenv:Envelope>'
+```
+- **Delete:**
+```bash
+curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:DeletarUsuario><wsdl:id>u2000</wsdl:id></wsdl:DeletarUsuario></soapenv:Body></soapenv:Envelope>'
 ```
 
 ---
