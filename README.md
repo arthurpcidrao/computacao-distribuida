@@ -13,4 +13,4 @@ Atividades para ampliar e conhecer as funcionalidades da computação distribuí
 - 🐳 [Trabalho 2 - Docker Compose](trabalho_2.md)
 - 🐳 [Trabalho 3 - Testes de Carga](locust-testes.md)
 - 🐳 [Trabalho 4 - Link Extractor e Testes de Desempenho](trabalho_4.md)
-- 🐳 [Trabalho 7 - Implementação de Algoritmos de Busca em Sistemas P2P](https://github.com/braulefernandes/p2p-search)
+- 🐳 [Trabalho 7 - Implementação de Algoritmos de Busca em Sistemas P2P](https://github.com/braulefernandes/p2p-search/blob/main/README.md)
