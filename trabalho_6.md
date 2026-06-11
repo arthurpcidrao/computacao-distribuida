@@ -61,14 +61,15 @@ curl -X POST http://localhost:9002 -H "Content-Type: application/json" -d '{"que
 ```
 
 ### 4.3. gRPC (Portas 8003/9003)
-*Requer `grpcurl` instalado.*
+*cliente grcp criado por nós mesmo*
 - **Criar Playlist:**
+Criar (requer usuário existente)
 ```bash
-grpcurl -plaintext -proto APIs/shared/streaming.proto -d '{"id": "p101", "nome": "Minha Playlist", "usuario_id": "u1"}' localhost:9003 streaming.StreamingService/CriarPlaylist
+python grpc_client.py --porta 9003 playlists criar --id p1 --nome "Favorites" --usuario_id u1
 ```
 - **Listar Usuários:**
 ```bash
-grpcurl -plaintext -proto APIs/shared/streaming.proto localhost:9003 streaming.StreamingService/ListarUsuarios
+python grpc_client.py --porta 9003 usuarios listar
 ```
 
 ### 4.4. SOAP (Portas 8004/9004)

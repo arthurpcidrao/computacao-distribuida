@@ -30,11 +30,9 @@ Uso:
 """
 
 import argparse
-import sys
-import os
 
-import python.streaming_pb2 as streaming_pb2
-import python.streaming_pb2_grpc as streaming_pb2_grpc
+from python import streaming_pb2
+from python import streaming_pb2_grpc
 import grpc
 
 
