@@ -195,10 +195,9 @@ class Mutation:
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
 from strawberry.fastapi import GraphQLRouter
-graphql_app = GraphQLRouter(schema)
-
+graphql_app = GraphQLRouter(schema, path="/")
 app = FastAPI(title="Streaming GraphQL API (Python)")
-app.include_router(graphql_app, prefix="/graphql")
+app.include_router(graphql_app)
 
 if __name__ == "__main__":
     import uvicorn

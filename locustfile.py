@@ -112,7 +112,7 @@ class PythonRestUser(HttpUser):
 
 class PythonGraphQLUser(HttpUser):
     wait_time = between(0.1, 0.5)
-    def q(self, query, name): self.client.post("/graphql", json={"query": query}, name=name)
+    def q(self, query, name): self.client.post("/", json={"query": query}, name=name)
     @task(1)
     def t1(self): self.q("{ listarUsuarios { id nome idade } }", "GQL Users")
     @task(1)

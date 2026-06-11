@@ -20,7 +20,7 @@ uv run python APIs/python/soap_api.py > /dev/null 2>&1 &
 node APIs/javascript/rest_api.js > /dev/null 2>&1 &
 node APIs/javascript/graphql_api.js > /dev/null 2>&1 &
 node APIs/javascript/grpc_api.js > /dev/null 2>&1 &
-node APIs/javascript/soap_api.js > /dev/null 2>&1 &
+node APIs/javascript/soap_api.js &
 
 echo "⏳ Aguardando serviços (15s)..."
 sleep 15
