@@ -13,7 +13,7 @@ Este trabalho realiza uma análise comparativa de performance entre quatro estil
 - **`locustfile.py`**: Definição das tarefas de carga (focadas em leitura).
 - **`run_tests.sh`**: Orquestrador em Bash do ciclo completo de benchmark.
 - **`consolidar_resultados.py`**: Processador estatístico e gerador de gráficos.
-- **`verify_apis.py`**: Script de validação funcional pós-correção.
+- **`APIs/grpc_client.py`**: Cliente gRPC customizado para testes manuais.
 
 ---
 
@@ -35,9 +35,9 @@ chmod +x run_tests.sh
 
 ---
 
-### 4. Guia de Teste CRUD via CLI (cURL)
+## 4. Guia de Teste CRUD via CLI
 
-As operações de **Update** e **Delete** utilizam o atributo `id` como identificador único para garantir que apenas o registro específico seja afetado, seguindo as regras de integridade do sistema.
+Abaixo estão os comandos para testar a criação (POST/Mutation) e recuperação (GET/Query) de dados em cada arquitetura. Nota: Utilize as portas 8001-8004 para Python e 9001-9004 para Node.js.
 
 ### 4.1. REST (Portas 8001/9001)
 - **Create (POST):**
@@ -84,29 +84,32 @@ curl -X POST http://localhost:9002 -H "Content-Type: application/json" -d '{"que
 ```
 
 ### 4.3. gRPC (Portas 8003/9003)
-*cliente grcp criado por nós mesmo*
-- **Create Playlist:**
+Utilize o cliente customizado localizado em `APIs/grpc_client.py`.
+
+- **Create:**
 ```bash
-python grpc_client.py --porta 9003 playlists criar --id p1 --nome "Favorites" --usuario_id u1
+python APIs/grpc_client.py --porta 9003 usuarios criar --id u1001 --nome "gRPC User" --idade 40
 ```
 - **Read All:**
 ```bash
-python grpc_client.py --porta 9003 usuarios listar
+python APIs/grpc_client.py --porta 9003 usuarios listar
 ```
 - **Read Single:**
 ```bash
-python grpc_client.py --porta 8003 usuarios obter --id u1
+python APIs/grpc_client.py --porta 9003 usuarios obter --id u1001
 ```
 - **Update:**
 ```bash
-python grpc_client.py --porta 8003 usuarios atualizar --id u1 --nome "Silva" --idade 31
+python APIs/grpc_client.py --porta 9003 usuarios atualizar --id u1001 --nome "gRPC Atualizado" --idade 41
 ```
 - **Delete:**
 ```bash
-python grpc_client.py --porta 8003 usuarios deletar --id u1
+python APIs/grpc_client.py --porta 9003 usuarios deletar --id u1001
 ```
 
 ### 4.4. SOAP (Portas 8004/9004)
+*Nota: Ambas as APIs respondem no path `/soap`.*
+
 - **Create:**
 ```bash
 curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:CriarUsuario><wsdl:id>u2000</wsdl:id><wsdl:nome>Soap User</wsdl:nome><wsdl:idade>45</wsdl:idade></wsdl:CriarUsuario></soapenv:Body></soapenv:Envelope>'
@@ -133,7 +136,7 @@ curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv
 ## 5. Metodologia de Benchmark
 
 Os testes foram executados de forma **individual e isolada** para cada carga (30, 40, 50 usuários):
-1.  A API era reiniciada.
+1.  A API alvo era reiniciada.
 2.  Seed de **1000 usuários, 1000 músicas e 100 playlists**.
 3.  Locust executava apenas requisições de leitura (GETs) por **2 minutos**, com rampa de **10 usuários/s**.
 4.  **Limite de Erro**: 10%. Resultados acima deste patamar foram considerados saturação tecnológica.
