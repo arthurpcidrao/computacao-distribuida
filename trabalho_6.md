@@ -117,7 +117,7 @@ curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv
 ```
 - **Read Single:**
 ```bash
-curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:ObterUsuario><wsdl:id>u1001</wsdl:id></wsdl:ObterUsuario></soapenv:Body></soapenv:Envelope>'
+curl -X POST http://localhost:9004/soap -H "Content-Type: text/xml" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://streaming.com/wsdl"><soapenv:Body><wsdl:ObterUsuario><wsdl:id>u2000</wsdl:id></wsdl:ObterUsuario></soapenv:Body></soapenv:Envelope>'
 ```
 - **Update:**
 ```bash
