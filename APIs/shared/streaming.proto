@@ -20,10 +20,27 @@ message Playlist {
   string usuario_id = 3;
 }
 
-message Vazio {}
+message Empty {}
 
 message IdRequest {
   string id = 1;
+}
+
+message AtualizarUsuarioRequest {
+  string id = 1;
+  string nome = 2;
+  int32 idade = 3;
+}
+
+message AtualizarMusicaRequest {
+  string id = 1;
+  string nome = 2;
+  string artista = 3;
+}
+
+message AtualizarPlaylistRequest {
+  string id = 1;
+  string nome = 2;
 }
 
 message ListaUsuariosResponse {
@@ -62,14 +79,31 @@ message RelacaoPlaylistMusicaRequest {
 }
 
 service StreamingService {
-  rpc ListarUsuarios(Vazio) returns (ListaUsuariosResponse);
-  rpc ListarMusicas(Vazio) returns (ListaMusicasResponse);
+  // USUÁRIOS - CRUD
+  rpc ListarUsuarios(Empty) returns (ListaUsuariosResponse);
+  rpc ObterUsuario(IdRequest) returns (Usuario);
+  rpc CriarUsuario(CriarUsuarioRequest) returns (Usuario);
+  rpc AtualizarUsuario(AtualizarUsuarioRequest) returns (Usuario);
+  rpc DeletarUsuario(IdRequest) returns (Empty);
+
+  // MÚSICAS - CRUD
+  rpc ListarMusicas(Empty) returns (ListaMusicasResponse);
+  rpc ObterMusica(IdRequest) returns (Musica);
+  rpc CriarMusica(CriarMusicaRequest) returns (Musica);
+  rpc AtualizarMusica(AtualizarMusicaRequest) returns (Musica);
+  rpc DeletarMusica(IdRequest) returns (Empty);
+
+  // PLAYLISTS - CRUD
+  rpc ListarPlaylists(Empty) returns (ListaPlaylistsResponse);
+  rpc ObterPlaylist(IdRequest) returns (Playlist);
+  rpc CriarPlaylist(CriarPlaylistRequest) returns (Playlist);
+  rpc AtualizarPlaylist(AtualizarPlaylistRequest) returns (Playlist);
+  rpc DeletarPlaylist(IdRequest) returns (Empty);
+
+  // RELAÇÕES
   rpc ListarPlaylistsPorUsuario(IdRequest) returns (ListaPlaylistsResponse);
   rpc ListarMusicasPorPlaylist(IdRequest) returns (ListaMusicasResponse);
   rpc ListarPlaylistsPorMusica(IdRequest) returns (ListaPlaylistsResponse);
-  
-  rpc CriarUsuario(CriarUsuarioRequest) returns (Usuario);
-  rpc CriarMusica(CriarMusicaRequest) returns (Musica);
-  rpc CriarPlaylist(CriarPlaylistRequest) returns (Playlist);
   rpc AdicionarMusicaPlaylist(RelacaoPlaylistMusicaRequest) returns (Playlist);
+  rpc RemoverMusicaPlaylist(RelacaoPlaylistMusicaRequest) returns (Playlist);
 }
