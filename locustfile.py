@@ -36,14 +36,25 @@ class GrpcClient:
     def __init__(self, environment, host):
         self.environment = environment
         self.host = host
-        self.channel = grpc.insecure_channel(self.host)
+        self.channel = grpc.aio.secure_channel(
+            self.host,
+            grpc.aio.ssl_channel_credentials()
+        ) if self.host.startswith('https') else grpc.insecure_channel(
+            self.host,
+            options=[
+                ('grpc.max_receive_message_length', -1),
+                ('grpc.max_send_message_length', -1),
+                ('grpc.keepalive_time_ms', 10000),
+                ('grpc.keepalive_timeout_ms', 5000),
+            ]
+        )
         self.stub = streaming_pb2_grpc.StreamingServiceStub(self.channel)
 
     def call(self, method_name, locust_name, request_data):
         method = getattr(self.stub, method_name)
         start_time = time.time()
         try:
-            response = method(request_data)
+            response = method(request_data, timeout=30)
             self.environment.events.request.fire(
                 request_type="grpc", name=locust_name,
                 response_time=(time.time() - start_time) * 1000,
@@ -129,19 +140,23 @@ class PythonGraphQLUser(HttpUser):
 
 class PythonGrpcUser(User):
     wait_time = between(0.1, 0.5)
-    def on_start(self): self.c = GrpcClient(self.environment, "localhost:8003")
+    def on_start(self):
+        self.c = GrpcClient(self.environment, "127.0.0.1:8003")
+    def on_stop(self):
+        if hasattr(self, 'c') and self.c.channel:
+            self.c.channel.close()
     @task(1)
     def t1(self): self.c.call("ListarUsuarios", "gRPC Users", streaming_pb2.Vazio())
     @task(1)
     def t2(self): self.c.call("ListarMusicas", "gRPC Music", streaming_pb2.Vazio())
     @task(1)
-    def t3(self): 
+    def t3(self):
         if USER_IDS: self.c.call("ListarPlaylistsPorUsuario", "gRPC User Playlists", streaming_pb2.IdRequest(id=random.choice(USER_IDS)))
     @task(1)
-    def t4(self): 
+    def t4(self):
         if PLAYLIST_IDS: self.c.call("ListarMusicasPorPlaylist", "gRPC Playlist Music", streaming_pb2.IdRequest(id=random.choice(PLAYLIST_IDS)))
     @task(1)
-    def t5(self): 
+    def t5(self):
         if MUSIC_IDS: self.c.call("ListarPlaylistsPorMusica", "gRPC Music Playlists", streaming_pb2.IdRequest(id=random.choice(MUSIC_IDS)))
 
 class PythonSoapUser(User):
@@ -196,19 +211,23 @@ class NodeGraphQLUser(HttpUser):
 
 class NodeGrpcUser(User):
     wait_time = between(0.1, 0.5)
-    def on_start(self): self.c = GrpcClient(self.environment, "localhost:9003")
+    def on_start(self):
+        self.c = GrpcClient(self.environment, "127.0.0.1:9003")
+    def on_stop(self):
+        if hasattr(self, 'c') and self.c.channel:
+            self.c.channel.close()
     @task(1)
     def t1(self): self.c.call("ListarUsuarios", "gRPC Users", streaming_pb2.Vazio())
     @task(1)
     def t2(self): self.c.call("ListarMusicas", "gRPC Music", streaming_pb2.Vazio())
     @task(1)
-    def t3(self): 
+    def t3(self):
         if USER_IDS: self.c.call("ListarPlaylistsPorUsuario", "gRPC User Playlists", streaming_pb2.IdRequest(id=random.choice(USER_IDS)))
     @task(1)
-    def t4(self): 
+    def t4(self):
         if PLAYLIST_IDS: self.c.call("ListarMusicasPorPlaylist", "gRPC Playlist Music", streaming_pb2.IdRequest(id=random.choice(PLAYLIST_IDS)))
     @task(1)
-    def t5(self): 
+    def t5(self):
         if MUSIC_IDS: self.c.call("ListarPlaylistsPorMusica", "gRPC Music Playlists", streaming_pb2.IdRequest(id=random.choice(MUSIC_IDS)))
 
 class NodeSoapUser(User):
