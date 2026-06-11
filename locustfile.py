@@ -146,9 +146,9 @@ class PythonGrpcUser(User):
         if hasattr(self, 'c') and self.c.channel:
             self.c.channel.close()
     @task(1)
-    def t1(self): self.c.call("ListarUsuarios", "gRPC Users", streaming_pb2.Vazio())
+    def t1(self): self.c.call("ListarUsuarios", "gRPC Users", streaming_pb2.Empty())
     @task(1)
-    def t2(self): self.c.call("ListarMusicas", "gRPC Music", streaming_pb2.Vazio())
+    def t2(self): self.c.call("ListarMusicas", "gRPC Music", streaming_pb2.Empty())
     @task(1)
     def t3(self):
         if USER_IDS: self.c.call("ListarPlaylistsPorUsuario", "gRPC User Playlists", streaming_pb2.IdRequest(id=random.choice(USER_IDS)))
@@ -217,9 +217,9 @@ class NodeGrpcUser(User):
         if hasattr(self, 'c') and self.c.channel:
             self.c.channel.close()
     @task(1)
-    def t1(self): self.c.call("ListarUsuarios", "gRPC Users", streaming_pb2.Vazio())
+    def t1(self): self.c.call("ListarUsuarios", "gRPC Users", streaming_pb2.Empty())
     @task(1)
-    def t2(self): self.c.call("ListarMusicas", "gRPC Music", streaming_pb2.Vazio())
+    def t2(self): self.c.call("ListarMusicas", "gRPC Music", streaming_pb2.Empty())
     @task(1)
     def t3(self):
         if USER_IDS: self.c.call("ListarPlaylistsPorUsuario", "gRPC User Playlists", streaming_pb2.IdRequest(id=random.choice(USER_IDS)))
