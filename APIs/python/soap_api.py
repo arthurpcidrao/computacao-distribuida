@@ -1,7 +1,9 @@
 from spyne import Application, rpc, ServiceBase, Integer, Unicode, ComplexModel, Array, Boolean
 from spyne.protocol.soap import Soap11
 from spyne.server.wsgi import WsgiApplication
-from wsgiref.simple_server import make_server
+from gevent.pywsgi import WSGIServer
+
+# ... rest of the imports and code ...
 
 # Define o namespace global para bater com o WSDL
 TNS = "http://streaming.com/wsdl"
@@ -208,6 +210,6 @@ class SoapMiddleware:
 wsgi_application = SoapMiddleware(WsgiApplication(application))
 
 if __name__ == '__main__':
-    print("SOAP server (Python) started on port 8004")
-    server = make_server('0.0.0.0', 8004, wsgi_application)
+    print("SOAP server (Python) started on port 8004 (gevent)")
+    server = WSGIServer(('0.0.0.0', 8004), wsgi_application)
     server.serve_forever()

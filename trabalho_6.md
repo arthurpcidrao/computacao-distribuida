@@ -1,5 +1,7 @@
 # Trabalho 6 - Benchmark de APIs Distribuídas (Streaming de Música)
 
+> **Nota de Atualização:** Todas as 8 APIs (REST, GraphQL, gRPC e SOAP em Python e Node.js) estão agora plenamente operacionais e foram incluídas neste benchmark. Os problemas nas apis SOAP(não estava retornando quando demonstrado para o professor) e gRPC (estava retornando um pacote constante e igual a 80) foram resolvidos.
+
 ## 1. Introdução e Objetivo
 Este trabalho realiza uma análise comparativa de performance entre quatro estilos arquiteturais de APIs: **REST**, **GraphQL**, **gRPC** e **SOAP**, implementados em duas linguagens distintas: **Python** e **Node.js (JavaScript)**. O foco é avaliar a latência (p95), o throughput (req/s) e a eficiência de transporte (tamanho do conteúdo) sob diferentes níveis de carga (30, 40 e 50 usuários simultâneos).
 
@@ -8,7 +10,6 @@ Este trabalho realiza uma análise comparativa de performance entre quatro estil
 ## 2. Inventário de Arquivos
 - **`APIs/`**: Código-fonte das 8 instâncias de serviço.
 - **`shared/`**: Contratos `streaming.proto` e `streaming.wsdl`.
-- **`main.sh`**: Script para iniciar e popular todas as APIs para testes manuais.
 - **`seed_data.py`**: Script de ingestão massiva de dados (1000 usuários/músicas).
 - **`locustfile.py`**: Definição das tarefas de carga (focadas em leitura).
 - **`run_tests.sh`**: Orquestrador em Bash do ciclo completo de benchmark.
@@ -167,17 +168,53 @@ Os testes foram executados de forma **individual e isolada** para cada carga (30
 ![Tamanho do Conteúdo](charts/content_size.png)
 **Justificativa**: O gRPC é o mais eficiente (payloads binários compactos). O SOAP é o mais "pesado" devido à verbosidade inerente das tags XML.
 
+### 6.6. Comparativo Geral (Carga Máxima - 50 usuários)
+![Comparativo Geral](charts/p95_combined_high.png)
+**Visão Consolidada**: O gráfico acima destaca a superioridade do gRPC e REST em ambas as linguagens, enquanto o SOAP (especialmente em Python) atinge o limite de exaustão de recursos.
+
 ---
 
-## 7. Conclusão
+## 7. Tabela de Dados Brutos
+Abaixo, os dados consolidados gerados pelo `consolidar_resultados.py` a partir dos logs do Locust:
 
-### 7.1. Qual API é mais rápida?
+| Linguagem | Estilo API | Usuários | p95 (ms) | Req/s | Tamanho (Bytes) |
+|-----------|------------|----------|----------|-------|-----------------|
+| JavaScript | GRPC | 30 | 5 | 97.6 | 22584 |
+| JavaScript | GRPC | 40 | 4 | 129.8 | 22575 |
+| JavaScript | GRPC | 50 | 4 | 161.7 | 22885 |
+| Python | GRPC | 30 | 5 | 97.8 | 22666 |
+| Python | GRPC | 40 | 5 | 129.7 | 22602 |
+| Python | GRPC | 50 | 5 | 162.1 | 22868 |
+| JavaScript | REST | 30 | 5 | 97.8 | 33053 |
+| JavaScript | REST | 40 | 5 | 130.0 | 32625 |
+| JavaScript | REST | 50 | 5 | 161.6 | 32501 |
+| Python | REST | 30 | 9 | 97.6 | 32335 |
+| Python | REST | 40 | 8 | 130.0 | 32782 |
+| Python | REST | 50 | 8 | 161.1 | 32667 |
+| JavaScript | GRAPHQL | 30 | 15 | 97.2 | 32348 |
+| JavaScript | GRAPHQL | 40 | 15 | 129.1 | 32498 |
+| JavaScript | GRAPHQL | 50 | 14 | 160.5 | 32195 |
+| Python | GRAPHQL | 30 | 38 | 94.1 | 34706 |
+| Python | GRAPHQL | 40 | 47 | 123.6 | 34952 |
+| Python | GRAPHQL | 50 | 58 | 151.0 | 34749 |
+| JavaScript | SOAP | 30 | 78 | 88.0 | 40086 |
+| JavaScript | SOAP | 40 | 120 | 106.9 | 40478 |
+| JavaScript | SOAP | 50 | 210 | 115.3 | 41211 |
+| Python | SOAP | 30 | 140 | 79.7 | 40707 |
+| Python | SOAP | 40 | 240 | 93.4 | 40666 |
+| Python | SOAP | 50 | 350 | 97.8 | 40255 |
+
+---
+
+## 8. Conclusão
+
+### 8.1. Qual API é mais rápida?
 **Vencedor: gRPC.** 
 Sua arquitetura binária sobre HTTP/2 elimina os gargalos de parsing de texto e latência de conexão.
 
-### 7.2. Qual linguagem é mais rápida?
+### 8.2. Qual linguagem é mais rápida?
 **Vencedor: JavaScript (Node.js).** 
 Apresentou latência consistentemente menor e maior estabilidade sob carga, especialmente em protocolos baseados em texto.
 
 ---
-*Relatório final gerado em 10 de Junho de 2026.*
+*Relatório final gerado em 12 de Junho de 2026.*

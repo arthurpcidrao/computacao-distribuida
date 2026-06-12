@@ -5,6 +5,8 @@ import os
 import json
 import grpc
 import sys
+import requests
+from zeep import Client, Transport
 
 # Import gRPC stubs
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'APIs', 'python')))
@@ -17,8 +19,6 @@ except ImportError:
     class Dummy: pass
     streaming_pb2 = Dummy()
     streaming_pb2_grpc = Dummy()
-
-from zeep import Client
 
 # Load valid IDs for randomized GETs
 USER_IDS = []
@@ -48,7 +48,11 @@ def _debug_log(host, locust_name, response=None, error=None):
     if error is not None:
         lines.append(f"  ERROR: {error}")
     else:
-        lines.append(f"  ByteSize: {response.ByteSize()}")
+        try:
+            bs = response.ByteSize()
+        except AttributeError:
+            bs = sys.getsizeof(str(response))
+        lines.append(f"  Size: {bs}")
         lines.append(f"  Content: {response}")
     lines.append("")
     _lock = getattr(_debug_log, "_lock", None)
@@ -63,10 +67,7 @@ class GrpcClient:
     def __init__(self, environment, host):
         self.environment = environment
         self.host = host
-        self.channel = grpc.aio.secure_channel(
-            self.host,
-            grpc.aio.ssl_channel_credentials()
-        ) if self.host.startswith('https') else grpc.insecure_channel(
+        self.channel = grpc.insecure_channel(
             self.host,
             options=[
                 ('grpc.max_receive_message_length', -1),
@@ -106,14 +107,24 @@ class SoapClient:
         self.binding = binding
         self.client = None
         self.service = None
+        self.session = requests.Session()
+        self.transport = Transport(session=self.session)
 
     def _ensure_client(self):
         if self.client is None:
-            self.client = Client(self.wsdl)
-            self.service = self.client.create_service('{http://streaming.com/wsdl}' + self.binding, self.address)
+            self.client = Client(self.wsdl, transport=self.transport)
+            try:
+                self.service = self.client.create_service('{http://streaming.com/wsdl}' + self.binding, self.address)
+            except Exception:
+                self.service = self.client.service
+            
+            if self.service is None:
+                self.service = self.client.service
 
     def call(self, method_name, locust_name, **kwargs):
         self._ensure_client()
+        if self.service is None:
+            raise Exception(f"Could not initialize SOAP service for {self.wsdl}")
         method = getattr(self.service, method_name)
         start_time = time.time()
         try:
@@ -190,7 +201,7 @@ class PythonGrpcUser(User):
 
 class PythonSoapUser(User):
     wait_time = between(0.1, 0.5)
-    def on_start(self): self.c = SoapClient(self.environment, "http://localhost:8004/?wsdl", "http://localhost:8004/", "Application")
+    def on_start(self): self.c = SoapClient(self.environment, "http://localhost:8004/?wsdl", "http://localhost:8004/", "StreamingService")
     @task(1)
     def t1(self): self.c.call("ListarUsuarios", "SOAP Users")
     @task(1)

@@ -35,7 +35,7 @@ start_apis() {
 }
 
 # Ordem: SOAP -> GraphQL -> REST -> gRPC (Mais sensíveis primeiro)
-TECHS=("grpc" "soap" "graphql" "rest")
+TECHS=("soap" "grpc" "graphql" "rest")
 
 echo "🧪 Iniciando bateria de testes priorizando NODE.JS..."
 

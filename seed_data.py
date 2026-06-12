@@ -20,7 +20,7 @@ APIS = [
     {"name": "py_rest", "type": "rest", "url": "http://localhost:8001"},
     {"name": "py_graphql", "type": "graphql", "url": "http://localhost:8002"},
     {"name": "py_grpc", "type": "grpc", "host": "localhost:8003"},
-    {"name": "py_soap", "type": "soap", "wsdl": "http://localhost:8004/?wsdl", "address": "http://localhost:8004/", "binding": "Application"},
+    {"name": "py_soap", "type": "soap", "wsdl": "http://localhost:8004/?wsdl", "address": "http://localhost:8004/", "binding": "StreamingService"},
     {"name": "node_rest", "type": "rest", "url": "http://localhost:9001"},
     {"name": "node_graphql", "type": "graphql", "url": "http://localhost:9002"},
     {"name": "node_grpc", "type": "grpc", "host": "localhost:9003"},
@@ -69,7 +69,14 @@ def seed_api(api, users, music, playlists):
     elif api['type'] == 'soap':
         client = Client(api['wsdl'])
         # Bind specifically to ensure correct address and port
-        service = client.create_service('{http://streaming.com/wsdl}' + api['binding'], api['address'])
+        try:
+            service = client.create_service('{http://streaming.com/wsdl}' + api['binding'], api['address'])
+        except Exception:
+            service = client.service
+        
+        if service is None:
+            service = client.service
+            
         for u in users:
             service.CriarUsuario(id=u['id'], nome=u['nome'], idade=u['idade'])
         for m in music:
