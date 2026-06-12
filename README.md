@@ -14,3 +14,4 @@ Atividades para ampliar e conhecer as funcionalidades da computação distribuí
 - 🐳 [Trabalho 3 - Testes de Carga](trabalho_3.md)
 - 🐳 [Trabalho 4 - Link Extractor e Testes de Desempenho](trabalho_4.md)
 - 🌐 [Trabalho 6 - APIs Distribuídas](trabalho_6.md)
+- 💻 [Trabalho 7 - Implementação de Algoritmos de Busca em Sistemas P2P](https://github.com/braulefernandes/p2p-search/blob/main/README.md)
