@@ -1,6 +1,13 @@
 # Trabalho 6 - Benchmark de APIs Distribuídas (Streaming de Música)
 
 > **Nota de Atualização:** Todas as 8 APIs (REST, GraphQL, gRPC e SOAP em Python e Node.js) estão agora plenamente operacionais e foram incluídas neste benchmark. Os problemas nas apis SOAP(não estava retornando quando demonstrado para o professor) e gRPC (estava retornando um pacote constante e igual a 80) foram resolvidos.
+>
+> Soluções:
+>   - Para normalização das requisições gRPC foi desenvolvido um cliente python que trata a comunicação com o gRPC, na seção `4. Guia de Teste CRUD via CLI` é possível ver como esta sendo feita as requisições.
+>   - No locust o gRPC estava mal configurado e estava retornando erro, o que resultava no tamanho de resposta médio sempre 80.
+>   - o SOAP estava faltando uma dependência e codigo quebrando a requisição, foi solucionado adicionando a dependência e consertando o erro no código.
+>
+> Após isso novos testes foram realizados e os graficos foram atualizados.
 
 ## 1. Introdução e Objetivo
 Este trabalho realiza uma análise comparativa de performance entre quatro estilos arquiteturais de APIs: **REST**, **GraphQL**, **gRPC** e **SOAP**, implementados em duas linguagens distintas: **Python** e **Node.js (JavaScript)**. O foco é avaliar a latência (p95), o throughput (req/s) e a eficiência de transporte (tamanho do conteúdo) sob diferentes níveis de carga (30, 40 e 50 usuários simultâneos).
