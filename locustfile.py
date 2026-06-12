@@ -32,6 +32,33 @@ try:
 except FileNotFoundError:
     pass
 
+DEBUG_LOG = "locust_results/debug_responses.log"
+_debug_counts = {}
+DEBUG_SAMPLES = 3  # log first N responses per (host, method)
+
+def _debug_log(host, locust_name, response=None, error=None):
+    key = f"{host}::{locust_name}"
+    _debug_counts.setdefault(key, 0)
+    if _debug_counts[key] >= DEBUG_SAMPLES:
+        return
+    _debug_counts[key] += 1
+    import threading
+    ts = time.strftime("%H:%M:%S")
+    lines = [f"[{ts}] {key} (sample {_debug_counts[key]}/{DEBUG_SAMPLES})"]
+    if error is not None:
+        lines.append(f"  ERROR: {error}")
+    else:
+        lines.append(f"  ByteSize: {response.ByteSize()}")
+        lines.append(f"  Content: {response}")
+    lines.append("")
+    _lock = getattr(_debug_log, "_lock", None)
+    if _lock is None:
+        _debug_log._lock = threading.Lock()
+        _lock = _debug_log._lock
+    with _lock:
+        with open(DEBUG_LOG, "a", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+
 class GrpcClient:
     def __init__(self, environment, host):
         self.environment = environment
@@ -55,13 +82,15 @@ class GrpcClient:
         start_time = time.time()
         try:
             response = method(request_data, timeout=30)
+            _debug_log(self.host, locust_name, response=response)
             self.environment.events.request.fire(
                 request_type="grpc", name=locust_name,
                 response_time=(time.time() - start_time) * 1000,
-                response_length=sys.getsizeof(response), exception=None,
+                response_length=response.ByteSize(), exception=None,
             )
             return response
         except grpc.RpcError as e:
+            _debug_log(self.host, locust_name, error=e)
             self.environment.events.request.fire(
                 request_type="grpc", name=locust_name,
                 response_time=(time.time() - start_time) * 1000,

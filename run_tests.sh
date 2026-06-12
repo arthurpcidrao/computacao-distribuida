@@ -55,7 +55,8 @@ for tech in "${TECHS[@]}"; do
         
         echo "📊 Testando JavaScript $tech com $users usuários..."
         uv run locust -f locustfile.py --headless -u $users -r $SPAWN_RATE -t $RUN_TIME \
-            --host $HOST --csv "locust_results/node_${tech}_${users}" $CLASS > /dev/null 2>&1
+            --host $HOST --csv "locust_results/node_${tech}_${users}" $CLASS \
+            2>&1 | tee -a "locust_results/node_${tech}_${users}_locust.log"
 
         # Teste Python
         start_apis
@@ -65,10 +66,11 @@ for tech in "${TECHS[@]}"; do
             grpc) HOST="localhost:8003"; CLASS="PythonGrpcUser";;
             soap) HOST="http://localhost:8004/?wsdl"; CLASS="PythonSoapUser";;
         esac
-        
+
         echo "📊 Testando Python $tech com $users usuários..."
         uv run locust -f locustfile.py --headless -u $users -r $SPAWN_RATE -t $RUN_TIME \
-            --host $HOST --csv "locust_results/py_${tech}_${users}" $CLASS > /dev/null 2>&1
+            --host $HOST --csv "locust_results/py_${tech}_${users}" $CLASS \
+            2>&1 | tee -a "locust_results/py_${tech}_${users}_locust.log"
 
     done
 done
