@@ -126,6 +126,5 @@ node_modules/
 coverage/
 
 # Generated files
-*.csv
 *.parquet
 *.feather

@@ -22,6 +22,7 @@ Este trabalho realiza uma análise comparativa de performance entre quatro estil
 - **`run_tests.sh`**: Orquestrador em Bash do ciclo completo de benchmark.
 - **`consolidar_resultados.py`**: Processador estatístico e gerador de gráficos.
 - **`APIs/grpc_client.py`**: Cliente gRPC customizado para testes manuais.
+- **`locust_results`**: Pasta com todos os resultados dos testes em csv [./locust_results](locust_results)
 
 ---
 
